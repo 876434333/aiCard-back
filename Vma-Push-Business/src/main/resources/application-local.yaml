@@ -1,0 +1,74 @@
+server:
+  port: 9001
+  context-path: /push
+logging:
+  #config: classpath:logback-spring.xml
+  path: ./logs/eam-business
+  file: ./logs/eam-business/eam-business-logback.log
+  level:
+      root: info
+      com.vma.push.business.dao: debug
+sms:
+  sdk_appid: 1400167725
+  sdk_key: 49280b547150964bf3a215b8fe113c96
+  template:
+    #用户注册
+    user_register: 241226
+    #待审核
+    check_pending: 245838
+    #审核结果
+    check_result: 245839
+spring:
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mail:
+    host: smtp.qq.com
+    username: 876434333@qq.com
+    password: mklkrlggxftbbfbe
+    default-encoding: UTF-8
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory.class: javax.net.ssl.SSLSocketFactory
+        debug: true
+    starttls:
+      enable: true
+      required: true
+
+  application:
+    name: vma-push-business
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      url: jdbc:mysql://127.0.0.1:3306/deecard_dev?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+      username: liql
+      password: deecard_dev
+
+      driver-class-name: com.mysql.jdbc.Driver
+      initialSize: 1
+      minIdle: 1
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 50
+      filters: stat
+      connectionProperties: druid.stat.mergeSql=false;druid.stat.slowSqlMillis=3000
+mybatis:
+  typeAliasesPackage: com.vma.push.business.entity
+  mapperLocations: classpath:com/vma/push/business/dao/**/*.xml
+
+
+
+
+
+

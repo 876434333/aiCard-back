@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.OrderDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.OrderDetail" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="offer_id" property="offerId" jdbcType="VARCHAR" />
+    <result column="norms_id" property="normsId" jdbcType="VARCHAR" />
+    <result column="offer_num" property="offerNum" jdbcType="INTEGER" />
+    <result column="offer_price" property="offerPrice" jdbcType="DECIMAL" />
+    <result column="offer_price_discount" property="offerPriceDiscount" jdbcType="DECIMAL" />
+    <result column="total_price" property="totalPrice" jdbcType="DECIMAL" />
+    <result column="total_price_discount" property="totalPriceDiscount" jdbcType="DECIMAL" />
+    <result column="charges" property="charges" jdbcType="DECIMAL" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, offer_id, norms_id, offer_num, offer_price, offer_price_discount, total_price, 
+    total_price_discount, charges, staff_id, create_time, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_order_detail
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from shop_order_detail
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.OrderDetail" >
+    insert into shop_order_detail (id, order_id, offer_id,
+      norms_id, offer_num, offer_price, 
+      offer_price_discount, total_price, total_price_discount, 
+      charges, staff_id, create_time, 
+      status)
+    values (#{id,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, #{offerId,jdbcType=VARCHAR}, 
+      #{normsId,jdbcType=VARCHAR}, #{offerNum,jdbcType=INTEGER}, #{offerPrice,jdbcType=DECIMAL}, 
+      #{offerPriceDiscount,jdbcType=DECIMAL}, #{totalPrice,jdbcType=DECIMAL}, #{totalPriceDiscount,jdbcType=DECIMAL}, 
+      #{charges,jdbcType=DECIMAL}, #{staffId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.OrderDetail" >
+    insert into shop_order_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="offerId != null" >
+        offer_id,
+      </if>
+      <if test="normsId != null" >
+        norms_id,
+      </if>
+      <if test="offerNum != null" >
+        offer_num,
+      </if>
+      <if test="offerPrice != null" >
+        offer_price,
+      </if>
+      <if test="offerPriceDiscount != null" >
+        offer_price_discount,
+      </if>
+      <if test="totalPrice != null" >
+        total_price,
+      </if>
+      <if test="totalPriceDiscount != null" >
+        total_price_discount,
+      </if>
+      <if test="charges != null" >
+        charges,
+      </if>
+      <if test="staffId != null" >
+        staff_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerId != null" >
+        #{offerId,jdbcType=VARCHAR},
+      </if>
+      <if test="normsId != null" >
+        #{normsId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerNum != null" >
+        #{offerNum,jdbcType=INTEGER},
+      </if>
+      <if test="offerPrice != null" >
+        #{offerPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="offerPriceDiscount != null" >
+        #{offerPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPrice != null" >
+        #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPriceDiscount != null" >
+        #{totalPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="charges != null" >
+        #{charges,jdbcType=DECIMAL},
+      </if>
+      <if test="staffId != null" >
+        #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.OrderDetail" >
+    update shop_order_detail
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerId != null" >
+        offer_id = #{offerId,jdbcType=VARCHAR},
+      </if>
+      <if test="normsId != null" >
+        norms_id = #{normsId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerNum != null" >
+        offer_num = #{offerNum,jdbcType=INTEGER},
+      </if>
+      <if test="offerPrice != null" >
+        offer_price = #{offerPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="offerPriceDiscount != null" >
+        offer_price_discount = #{offerPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPrice != null" >
+        total_price = #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPriceDiscount != null" >
+        total_price_discount = #{totalPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="charges != null" >
+        charges = #{charges,jdbcType=DECIMAL},
+      </if>
+      <if test="staffId != null" >
+        staff_id = #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.OrderDetail" >
+    update shop_order_detail
+    set order_id = #{orderId,jdbcType=VARCHAR},
+      offer_id = #{offerId,jdbcType=VARCHAR},
+      norms_id = #{normsId,jdbcType=VARCHAR},
+      offer_num = #{offerNum,jdbcType=INTEGER},
+      offer_price = #{offerPrice,jdbcType=DECIMAL},
+      offer_price_discount = #{offerPriceDiscount,jdbcType=DECIMAL},
+      total_price = #{totalPrice,jdbcType=DECIMAL},
+      total_price_discount = #{totalPriceDiscount,jdbcType=DECIMAL},
+      charges = #{charges,jdbcType=DECIMAL},
+      staff_id = #{staffId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

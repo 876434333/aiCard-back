@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.DeployMapper" >
+    <select id="selectAll" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Deploy">
+        select
+        id,
+        CorpID,
+        contactssecret,
+        bosssecret,
+        aisecret,
+        boss_AgentId bossAgentid,
+        ai_AgentId aiAgentid,
+        app_id appId,
+        secret,
+        mch_id mchId,
+        pay_key payKey,
+        enterprise_id enterpriseId,
+        message_template messageTemplate,
+        pay_template payTemplate
+        from deploy
+        where enterprise_id = #{id}
+    </select>
+</mapper>

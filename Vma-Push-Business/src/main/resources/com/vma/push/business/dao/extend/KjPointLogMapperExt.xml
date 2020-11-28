@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.KjPointLogMapper" >
+
+    <select id="selectByCustomId" parameterType="java.lang.String" resultType="com.vma.push.business.entity.KjPointLog">
+        select t.remain_point
+        from (select max(create_time),remain_point
+        FROM  kj_point_log
+        WHERE  custom_id=#{customId}
+        group by custom_id) t
+    </select>
+
+    <select id="selectOperationPointByCustomIdAndDays" resultType="com.vma.push.business.dto.rsp.RspDaysPointNumber">
+        SELECT
+          c.datetime create_time,
+          ifnull(s.count,0) point_number
+        FROM
+            ( SELECT datelist AS datetime FROM calendar WHERE datelist <![CDATA[>=]]> date(now()) - INTERVAL #{dayNumber} DAY AND datelist <![CDATA[<]]> now()
+            ) c left join (
+        SELECT
+            date(create_time) as datetime, sum(operation_point) as count
+        FROM
+            kj_point_log
+        WHERE
+            operation = "1"
+        AND custom_id IN ( SELECT
+              id
+            FROM
+              enterprise
+            WHERE
+              parent_id=#{enterprise_id}
+              )
+        AND custom_id <![CDATA[!=]]>#{enterprise_id}
+        AND create_time <![CDATA[>=]]> date(now()) - INTERVAL #{dayNumber} DAY AND create_time <![CDATA[<]]> now()
+        GROUP BY date (create_time)
+        ) s on c.datetime = s.datetime
+        ORDER BY c.datetime asc
+    </select>
+
+    <select id="selectOperationPointByCustomId" resultType="java.lang.Long">
+        SELECT SUM(operation_point)
+        FROM kj_point_log WHERE
+        operation = "1"
+        AND custom_id IN (SELECT id FROM enterprise WHERE parent_id=#{enterprise_id})
+        <if test="dayNumber != null ">
+            AND TO_DAYS(NOW()) = TO_DAYS(create_time) +#{dayNumber}
+        </if>
+    </select>
+
+    <select id="findPage" parameterType="com.vma.push.business.dto.req.superback.ReqPiontLogPage" resultType="com.vma.push.business.dto.rsp.superback.RspPointLog">
+        select ifnull(e.id,"0") custom_id,ifnull(e.name,"超级后台") custom_name,ifnull(e.enterprise_no,"SO000000") custom_code,ifnull(e.phone,"0000-00000000") phone,
+        log.content,log.operation,log.operation_point,log.remain_point,log.create_time
+        FROM  kj_point_log log
+        <if test='enterprise_id!="0" and is_me==1'>
+            left join enterprise e on log.custom_id = e.id
+            WHERE 1=1
+            <if test='enterprise_id != null and enterprise_id !=""'>
+                AND custom_id =#{enterprise_id}
+                AND target_id NOT IN (
+                  SELECT
+                    id
+                  FROM
+                    enterprise
+                  WHERE
+                    id IN (select id from child_dept_enter where enterprise_id=#{enterprise_id})
+                )
+            </if>
+        </if>
+        <if test='enterprise_id!="0" and is_me==0'>
+            left join enterprise e on log.custom_id = e.id
+            WHERE 1=1
+            <if test='enterprise_id != null and enterprise_id !=""'>
+                AND custom_id IN (
+                SELECT id FROM enterprise
+                WHERE id IN (select id from child_dept_enter where enterprise_id=#{enterprise_id})
+                ) AND log.custom_id !=#{enterprise_id} and log.target_id=#{enterprise_id}
+            </if>
+        </if>
+
+        <if test='enterprise_id!="0" and is_me==null'>
+            left join enterprise e on log.custom_id = e.id
+            WHERE 1=1
+            <if test='enterprise_id != null and enterprise_id !=""'>
+                AND custom_id = #{enterprise_id}
+            </if>
+        </if>
+
+        <if test='enterprise_id=="0"'>
+            left join enterprise e on log.custom_id = e.id
+            WHERE 1=1
+            <if test='enterprise_id != null and enterprise_id !=""'>
+                AND target_id = #{enterprise_id}
+            </if>
+        </if>
+
+        <if test="role != null">
+            and e.role = #{role}
+        </if>
+        <if test="create_time_start != null ">
+            and log.create_time<![CDATA[>=]]>#{create_time_start}
+        </if>
+        <if test="create_time_end != null">
+            and log.create_time<![CDATA[<=]]>#{create_time_end}
+        </if>
+        <if test="operation != null and operation != '' ">
+            AND log.operation = #{operation}
+        </if>
+        ORDER BY log.create_time DESC
+    </select>
+
+
+    <select id="getCustomDetail" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.superback.RspCustomDetail">
+        select e.name,e.enterprise_no,e.login_account,e.money_init,e.money_sum,e.money_leave,
+        0 area_num,0 agent_num,e.phone,e.status,e.address,e.create_time,a.name create_by,e.remark
+        FROM  enterprise e
+        left join admin a on e.create_staff_id = a.id
+        WHERE e.id = #{id}
+    </select>
+
+    <select id="getCustomCount" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.superback.RspCustomCount">
+        select sum(a.area_num) area_num,sum(a.agent_num) agent_num
+        from( select count(e2.id) area_num,0 agent_num
+        FROM  enterprise e1
+        left join enterprise e2 on e1.id = e2.parent_id
+        where e1.id= #{id}
+        union
+        select  0 area_num,count(e3.id)  agent_num
+        FROM  enterprise e1
+        left join enterprise e2 on e1.id = e2.parent_id
+        left join enterprise e3 on e2.id = e3.parent_id
+        where e1.id=  #{id}) a
+    </select>
+</mapper>

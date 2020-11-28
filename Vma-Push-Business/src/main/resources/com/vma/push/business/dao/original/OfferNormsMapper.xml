@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.OfferNormsMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.OfferNorms" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="offer_id" property="offerId" jdbcType="VARCHAR" />
+    <result column="offer_price" property="offerPrice" jdbcType="DECIMAL" />
+    <result column="offer_leave" property="offerLeave" jdbcType="INTEGER" />
+    <result column="is_default" property="isDefault" jdbcType="INTEGER" />
+    <result column="norms_type" property="normsType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="norms_pic" property="normsPic" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, offer_id, offer_price, offer_leave, is_default, norms_type, create_time, 
+    status, norms_pic
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_offer_norms
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from shop_offer_norms
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.OfferNorms" >
+    insert into shop_offer_norms (id, name, offer_id,
+      offer_price, offer_leave, is_default, 
+      norms_type, create_time, status, 
+      norms_pic)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{offerId,jdbcType=VARCHAR}, 
+      #{offerPrice,jdbcType=DECIMAL}, #{offerLeave,jdbcType=INTEGER}, #{isDefault,jdbcType=INTEGER}, 
+      #{normsType,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{normsPic,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.OfferNorms" >
+    insert into shop_offer_norms
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="offerId != null" >
+        offer_id,
+      </if>
+      <if test="offerPrice != null" >
+        offer_price,
+      </if>
+      <if test="offerLeave != null" >
+        offer_leave,
+      </if>
+      <if test="isDefault != null" >
+        is_default,
+      </if>
+      <if test="normsType != null" >
+        norms_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="normsPic != null" >
+        norms_pic,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="offerId != null" >
+        #{offerId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerPrice != null" >
+        #{offerPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="offerLeave != null" >
+        #{offerLeave,jdbcType=INTEGER},
+      </if>
+      <if test="isDefault != null" >
+        #{isDefault,jdbcType=INTEGER},
+      </if>
+      <if test="normsType != null" >
+        #{normsType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="normsPic != null" >
+        #{normsPic,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.OfferNorms" >
+    update shop_offer_norms
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="offerId != null" >
+        offer_id = #{offerId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerPrice != null" >
+        offer_price = #{offerPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="offerLeave != null" >
+        offer_leave = #{offerLeave,jdbcType=INTEGER},
+      </if>
+      <if test="isDefault != null" >
+        is_default = #{isDefault,jdbcType=INTEGER},
+      </if>
+      <if test="normsType != null" >
+        norms_type = #{normsType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="normsPic != null" >
+        norms_pic = #{normsPic,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.OfferNorms" >
+    update shop_offer_norms
+    set name = #{name,jdbcType=VARCHAR},
+      offer_id = #{offerId,jdbcType=VARCHAR},
+      offer_price = #{offerPrice,jdbcType=DECIMAL},
+      offer_leave = #{offerLeave,jdbcType=INTEGER},
+      is_default = #{isDefault,jdbcType=INTEGER},
+      norms_type = #{normsType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      norms_pic = #{normsPic,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

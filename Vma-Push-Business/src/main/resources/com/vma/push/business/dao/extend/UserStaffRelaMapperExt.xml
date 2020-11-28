@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserStaffRelaMapper">
+	<select id="queryStaffInfoByUser" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM user_staff_rela WHERE user_id = #{userId} AND staff_id = #{staffId}
+		AND enterprise_id = #{enterpriseId} LIMIT 1
+	</select>
+
+	<select id="countUser" parameterType="java.util.Map" resultType="java.lang.Long">
+		call pro_test_partlist(#{departmentId},#{enterpriseId});
+		SELECT count(user_id)
+		FROM user_staff_rela
+		WHERE enterprise_id = #{enterpriseId}
+		<if test="departmentId != null and departmentId != '' ">
+			AND department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+		</if>
+		<if test="day != null">
+			AND to_days(now())-to_days(create_time) <![CDATA[<]]> #{day}
+		</if>
+		<if test="staffId != null and staffId != ''">
+			AND staff_id = #{staffId}
+		</if>
+	</select>
+	<select id="attachcountUser" parameterType="java.util.Map" resultType="java.lang.Long">
+		call pro_test_partlist(#{departmentId},#{enterpriseId});
+		SELECT count(user_id)
+		FROM click_action_log
+		WHERE enterprise_id = #{enterpriseId}
+		AND action_code='1000'
+		<if test="departmentId != null and departmentId != '' ">
+			AND department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+		</if>
+		<if test="day != null">
+			AND to_days(now())-to_days(create_time) <![CDATA[<=]]> #{day}
+		</if>
+		<if test="staffId != null and staffId != ''">
+			AND employee_id = #{staffId}
+		</if>
+	</select>
+
+	<select id="updateCarAction" parameterType="com.vma.push.business.dto.req.staff.ReqCarAction">
+        update user_staff_rela
+        SET status=#{status} WHERE user_id=#{user_id} and staff_id=#{staff_id}
+    </select>
+
+	<select id="simpleUserInfo" resultType="com.vma.push.business.dto.rsp.userInfo.RspUserSimpleInfo">
+        select a.head_icon,ifnull(NULLIF(b.name,''),a.nick_name) nick_name,a.hx_im_login,a.phone bind_phone,b.phone,b.clinch_time,
+        case when b.clinch_rate  is null then b.rate else b.clinch_rate END rate
+        from user_info a left join user_staff_rela b on a.id=b.user_id
+        where b.user_id =#{id}
+        and b.staff_id=#{staffid}
+        and b.enterprise_id=#{enterpriseid} limit 1
+    </select>
+	<update id="editUser" parameterType="com.vma.push.business.dto.rsp.userInfo.RspUserDetail4Sale">
+        update user_staff_rela
+        set `name`=#{name},
+        phone=#{phone},
+        mail=#{mail},
+        company=#{company},
+        position=#{position},
+        birthday=#{birthday},
+        modify_time=#{modify_time},
+        remark=#{remark}
+        where id=#{id}
+    </update>
+
+	<update id="updateDepartment" parameterType="java.lang.String">
+        update user_staff_rela
+        set department_id=#{newer}
+        where staff_id=#{staffId} AND department_id = #{older}
+    </update>
+
+	<delete id="deleteByStaff" parameterType="java.lang.String">
+        DELETE FROM  user_staff_rela WHERE staff_id = #{staffId}
+    </delete>
+	<update id="updateClinchTime" parameterType="com.vma.push.business.dto.req.ReqUpdateTime">
+    	update user_staff_rela set clinch_time=#{times} where user_id=#{user_id} and staff_id=#{staff_id}
+    </update>
+	<update id="updateClinchRate" parameterType="com.vma.push.business.dto.req.ReqUpdateRate">
+    	update user_staff_rela set clinch_rate=#{rate} where user_id=#{user_id} and staff_id=#{staff_id}
+    </update>
+
+	<select id="getUserRelaListByStaffid" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM user_staff_rela where staff_id=#{staffId}
+	</select>
+
+	<select id="getUserRelaListByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM user_staff_rela where user_id=#{userId}
+	</select>
+	<select id="getPhone" parameterType="java.lang.String" resultType="java.lang.String">
+        select phone FROM user_staff_rela where user_id=#{userId} and staff_id=#{staffId} limit 1
+    </select>
+	<update id="updataPhone" parameterType="com.vma.push.business.entity.UserStaffRela">
+	 	update user_staff_rela set phone=#{phone} where user_id=#{userId} and staff_id=#{staffId}
+    </update>
+	<update id="updataIsCollect">
+	 	update user_staff_rela set is_collect=#{is_collect} where id=#{id}
+    </update>
+	<select id="getSeeMyselfCardList" resultType="com.vma.push.business.dto.rsp.mini.ResOpenId">
+		select u.head_icon headIcon, u.nick_name nickName, e.name enterpriseName
+		from user_staff_rela us
+		left join user_info u on u.id = us.user_id
+		left join staff s on s.id = us.staff_id
+		left join enterprise e on e.id = s.enterprise_id
+		where us.staff_id in
+		<foreach collection="listStaffId" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+</mapper>

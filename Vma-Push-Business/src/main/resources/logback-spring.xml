@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="10 seconds">
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <contextName>eam-business-log</contextName>
+    <property name="log.path" value="./logs/eam-business/logback.log" />
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder 默认配置为PatternLayoutEncoder -->
+        <encoder>
+            <pattern>[%X{requestId}] %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 每天一归档 -->
+            <fileNamePattern>${log.path}.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%X{requestId}] %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 日志级别 -->
+    <root>
+        <level value="debug" />
+        <level value="info" />
+        <level value="error" />
+        <appender-ref ref="console" />
+        <appender-ref ref="file" />
+    </root>
+
+    <logger name="com.eam" additivity="false">
+        <level value="info" />
+        <level value="debug" />
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.springframework" additivity="false">
+        <level value="info" />
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+</configuration>

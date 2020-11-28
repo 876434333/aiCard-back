@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.SysConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.SysConfig" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="im_private" property="imPrivate" jdbcType="VARCHAR" />
+    <result column="im_publick" property="imPublick" jdbcType="VARCHAR" />
+    <result column="im_sdk_app" property="imSdkApp" jdbcType="VARCHAR" />
+    <result column="account_type" property="accountType" jdbcType="VARCHAR" />
+    <result column="wx_pay_callback_url" property="wxPayCallbackUrl" jdbcType="VARCHAR" />
+    <result column="branch" property="branch" jdbcType="VARCHAR" />
+    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="mobile_logo" property="mobileLogo" jdbcType="VARCHAR" />
+    <result column="wechat_logo" property="wechatLogo" jdbcType="VARCHAR" />
+    <result column="location_logo" property="locationLogo" jdbcType="VARCHAR" />
+    <result column="qiniu_access_key" property="qiniuAccessKey" jdbcType="VARCHAR" />
+    <result column="qiniu_secret_key" property="qiniuSecretKey" jdbcType="VARCHAR" />
+    <result column="qiniu_url" property="qiniuUrl" jdbcType="VARCHAR" />
+    <result column="qiniu_zone" property="qiniuZone" jdbcType="VARCHAR" />
+    <result column="qiniu_bucket" property="qiniuBucket" jdbcType="VARCHAR" />
+    <result column="pf_default_deptid" property="platformDefaultDeptId" jdbcType="VARCHAR" />
+    <result column="pf_corp_id" property="platformCorpId" jdbcType="VARCHAR" />
+    <result column="pf_mini_appid" property="platformMiniAppId" jdbcType="VARCHAR" />
+
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, im_private, im_publick, im_sdk_app, account_type, wx_pay_callback_url, branch, 
+    img_url, mobile_logo, wechat_logo, location_logo, qiniu_access_key, qiniu_secret_key, 
+    qiniu_url, qiniu_zone, qiniu_bucket,pf_default_deptid,pf_corp_id,pf_mini_appid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_config
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sys_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.SysConfig" >
+    insert into sys_config (id, im_private, im_publick, 
+      im_sdk_app, account_type, wx_pay_callback_url, 
+      branch, img_url, mobile_logo, 
+      wechat_logo, location_logo, qiniu_access_key, 
+      qiniu_secret_key, qiniu_url, qiniu_bucket, qiniu_zone
+      )
+    values (#{id,jdbcType=INTEGER}, #{imPrivate,jdbcType=VARCHAR}, #{imPublick,jdbcType=VARCHAR}, 
+      #{imSdkApp,jdbcType=VARCHAR}, #{accountType,jdbcType=VARCHAR}, #{wxPayCallbackUrl,jdbcType=VARCHAR}, 
+      #{branch,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, #{mobileLogo,jdbcType=VARCHAR}, 
+      #{wechatLogo,jdbcType=VARCHAR}, #{locationLogo,jdbcType=VARCHAR}, #{qiniuAccessKey,jdbcType=VARCHAR}, 
+      #{qiniuSecretKey,jdbcType=VARCHAR}, #{qiniuUrl,jdbcType=VARCHAR}, #{qiniuBucket,jdbcType=VARCHAR},
+      #{qiniuZone,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.SysConfig" >
+    insert into sys_config
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imPrivate != null" >
+        im_private,
+      </if>
+      <if test="imPublick != null" >
+        im_publick,
+      </if>
+      <if test="imSdkApp != null" >
+        im_sdk_app,
+      </if>
+      <if test="accountType != null" >
+        account_type,
+      </if>
+      <if test="wxPayCallbackUrl != null" >
+        wx_pay_callback_url,
+      </if>
+      <if test="branch != null" >
+        branch,
+      </if>
+      <if test="imgUrl != null" >
+        img_url,
+      </if>
+      <if test="mobileLogo != null" >
+        mobile_logo,
+      </if>
+      <if test="wechatLogo != null" >
+        wechat_logo,
+      </if>
+      <if test="locationLogo != null" >
+        location_logo,
+      </if>
+      <if test="qiniuAccessKey != null" >
+        qiniu_access_key,
+      </if>
+      <if test="qiniuSecretKey != null" >
+        qiniu_secret_key,
+      </if>
+      <if test="qiniuUrl != null" >
+        qiniu_url,
+      </if>
+      <if test="qiniuBucket != null" >
+        qiniu_bucket,
+      </if>
+      <if test="qiniuZone != null" >
+        qiniu_zone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imPrivate != null" >
+        #{imPrivate,jdbcType=VARCHAR},
+      </if>
+      <if test="imPublick != null" >
+        #{imPublick,jdbcType=VARCHAR},
+      </if>
+      <if test="imSdkApp != null" >
+        #{imSdkApp,jdbcType=VARCHAR},
+      </if>
+      <if test="accountType != null" >
+        #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="wxPayCallbackUrl != null" >
+        #{wxPayCallbackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="branch != null" >
+        #{branch,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileLogo != null" >
+        #{mobileLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatLogo != null" >
+        #{wechatLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="locationLogo != null" >
+        #{locationLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuAccessKey != null" >
+        #{qiniuAccessKey,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuSecretKey != null" >
+        #{qiniuSecretKey,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuUrl != null" >
+        #{qiniuUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuBucket != null" >
+        #{qiniuBucket,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuZone != null" >
+        #{qiniuZone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.SysConfig" >
+    update sys_config
+    <set >
+      <if test="imPrivate != null" >
+        im_private = #{imPrivate,jdbcType=VARCHAR},
+      </if>
+      <if test="imPublick != null" >
+        im_publick = #{imPublick,jdbcType=VARCHAR},
+      </if>
+      <if test="imSdkApp != null" >
+        im_sdk_app = #{imSdkApp,jdbcType=VARCHAR},
+      </if>
+      <if test="accountType != null" >
+        account_type = #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="wxPayCallbackUrl != null" >
+        wx_pay_callback_url = #{wxPayCallbackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="branch != null" >
+        branch = #{branch,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        img_url = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileLogo != null" >
+        mobile_logo = #{mobileLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatLogo != null" >
+        wechat_logo = #{wechatLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="locationLogo != null" >
+        location_logo = #{locationLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuAccessKey != null" >
+        qiniu_access_key = #{qiniuAccessKey,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuSecretKey != null" >
+        qiniu_secret_key = #{qiniuSecretKey,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuUrl != null" >
+        qiniu_url = #{qiniuUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuBucket != null" >
+        qiniu_bucket = #{qiniuBucket,jdbcType=VARCHAR},
+      </if>
+      <if test="qiniuZone != null" >
+        qiniu_zone = #{qiniuZone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.SysConfig" >
+    update sys_config
+    set im_private = #{imPrivate,jdbcType=VARCHAR},
+      im_publick = #{imPublick,jdbcType=VARCHAR},
+      im_sdk_app = #{imSdkApp,jdbcType=VARCHAR},
+      account_type = #{accountType,jdbcType=VARCHAR},
+      wx_pay_callback_url = #{wxPayCallbackUrl,jdbcType=VARCHAR},
+      branch = #{branch,jdbcType=VARCHAR},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      mobile_logo = #{mobileLogo,jdbcType=VARCHAR},
+      wechat_logo = #{wechatLogo,jdbcType=VARCHAR},
+      location_logo = #{locationLogo,jdbcType=VARCHAR},
+      qiniu_access_key = #{qiniuAccessKey,jdbcType=VARCHAR},
+      qiniu_secret_key = #{qiniuSecretKey,jdbcType=VARCHAR},
+      qiniu_url = #{qiniuUrl,jdbcType=VARCHAR},
+      qiniu_bucket = #{qiniuBucket,jdbcType=VARCHAR}
+      qiniu_zone = #{qiniuZone,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

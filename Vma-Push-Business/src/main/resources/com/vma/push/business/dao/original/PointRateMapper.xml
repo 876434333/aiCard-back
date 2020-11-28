@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.PointRateMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.PointRate" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="oem_rate" property="oemRate" jdbcType="REAL" />
+    <result column="regional_rate" property="regionalRate" jdbcType="REAL" />
+    <result column="agent_rate" property="agentRate" jdbcType="REAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, oem_rate, regional_rate, agent_rate, create_time, modify_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kj_point_rate
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from kj_point_rate
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.PointRate" >
+    insert into kj_point_rate (id, oem_rate, regional_rate, 
+      agent_rate, create_time, modify_time
+      )
+    values (#{id,jdbcType=VARCHAR}, #{oemRate,jdbcType=REAL}, #{regionalRate,jdbcType=REAL}, 
+      #{agentRate,jdbcType=REAL}, #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.PointRate" >
+    insert into kj_point_rate
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="oemRate != null" >
+        oem_rate,
+      </if>
+      <if test="regionalRate != null" >
+        regional_rate,
+      </if>
+      <if test="agentRate != null" >
+        agent_rate,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="modifyTime != null" >
+        modify_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="oemRate != null" >
+        #{oemRate,jdbcType=REAL},
+      </if>
+      <if test="regionalRate != null" >
+        #{regionalRate,jdbcType=REAL},
+      </if>
+      <if test="agentRate != null" >
+        #{agentRate,jdbcType=REAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.PointRate" >
+    update kj_point_rate
+    <set >
+      <if test="oemRate != null" >
+        oem_rate = #{oemRate,jdbcType=REAL},
+      </if>
+      <if test="regionalRate != null" >
+        regional_rate = #{regionalRate,jdbcType=REAL},
+      </if>
+      <if test="agentRate != null" >
+        agent_rate = #{agentRate,jdbcType=REAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.PointRate" >
+    update kj_point_rate
+    set oem_rate = #{oemRate,jdbcType=REAL},
+      regional_rate = #{regionalRate,jdbcType=REAL},
+      agent_rate = #{agentRate,jdbcType=REAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

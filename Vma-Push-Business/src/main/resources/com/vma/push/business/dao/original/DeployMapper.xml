@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.DeployMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.Deploy" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="CorpID" property="corpid" jdbcType="VARCHAR" />
+    <result column="contactssecret" property="contactssecret" jdbcType="VARCHAR" />
+    <result column="bosssecret" property="bosssecret" jdbcType="VARCHAR" />
+    <result column="aisecret" property="aisecret" jdbcType="VARCHAR" />
+    <result column="boss_AgentId" property="bossAgentid" jdbcType="VARCHAR" />
+    <result column="ai_AgentId" property="aiAgentid" jdbcType="VARCHAR" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
+    <result column="secret" property="secret" jdbcType="VARCHAR" />
+    <result column="mch_id" property="mchId" jdbcType="VARCHAR" />
+    <result column="pay_key" property="payKey" jdbcType="VARCHAR" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="VARCHAR" />
+    <result column="private_key" property="privateKey" jdbcType="VARCHAR" />
+    <result column="public_key" property="publicKey" jdbcType="VARCHAR" />
+    <result column="skd_app_id" property="skdAppId" jdbcType="VARCHAR" />
+    <result column="manager_id" property="managerId" jdbcType="VARCHAR" />
+    <result column="message_template" property="messageTemplate" jdbcType="VARCHAR" />
+    <result column="pay_template" property="payTemplate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, CorpID, contactssecret, bosssecret, aisecret, boss_AgentId, ai_AgentId, app_id, 
+    secret, mch_id, pay_key, enterprise_id, private_key, public_key, skd_app_id, manager_id, 
+    message_template, pay_template
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from deploy
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from deploy
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.Deploy" >
+    insert into deploy (id, CorpID, contactssecret, 
+      bosssecret, aisecret, boss_AgentId, 
+      ai_AgentId, app_id, secret, 
+      mch_id, pay_key, enterprise_id, 
+      private_key, public_key, skd_app_id, 
+      manager_id, message_template, pay_template
+      )
+    values (#{id,jdbcType=VARCHAR}, #{corpid,jdbcType=VARCHAR}, #{contactssecret,jdbcType=VARCHAR}, 
+      #{bosssecret,jdbcType=VARCHAR}, #{aisecret,jdbcType=VARCHAR}, #{bossAgentid,jdbcType=VARCHAR}, 
+      #{aiAgentid,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, #{secret,jdbcType=VARCHAR}, 
+      #{mchId,jdbcType=VARCHAR}, #{payKey,jdbcType=VARCHAR}, #{enterpriseId,jdbcType=VARCHAR}, 
+      #{privateKey,jdbcType=VARCHAR}, #{publicKey,jdbcType=VARCHAR}, #{skdAppId,jdbcType=VARCHAR}, 
+      #{managerId,jdbcType=VARCHAR}, #{messageTemplate,jdbcType=VARCHAR}, #{payTemplate,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.Deploy" >
+    insert into deploy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="corpid != null" >
+        CorpID,
+      </if>
+      <if test="contactssecret != null" >
+        contactssecret,
+      </if>
+      <if test="bosssecret != null" >
+        bosssecret,
+      </if>
+      <if test="aisecret != null" >
+        aisecret,
+      </if>
+      <if test="bossAgentid != null" >
+        boss_AgentId,
+      </if>
+      <if test="aiAgentid != null" >
+        ai_AgentId,
+      </if>
+      <if test="appId != null" >
+        app_id,
+      </if>
+      <if test="secret != null" >
+        secret,
+      </if>
+      <if test="mchId != null" >
+        mch_id,
+      </if>
+      <if test="payKey != null" >
+        pay_key,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="privateKey != null" >
+        private_key,
+      </if>
+      <if test="publicKey != null" >
+        public_key,
+      </if>
+      <if test="skdAppId != null" >
+        skd_app_id,
+      </if>
+      <if test="managerId != null" >
+        manager_id,
+      </if>
+      <if test="messageTemplate != null" >
+        message_template,
+      </if>
+      <if test="payTemplate != null" >
+        pay_template,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="corpid != null" >
+        #{corpid,jdbcType=VARCHAR},
+      </if>
+      <if test="contactssecret != null" >
+        #{contactssecret,jdbcType=VARCHAR},
+      </if>
+      <if test="bosssecret != null" >
+        #{bosssecret,jdbcType=VARCHAR},
+      </if>
+      <if test="aisecret != null" >
+        #{aisecret,jdbcType=VARCHAR},
+      </if>
+      <if test="bossAgentid != null" >
+        #{bossAgentid,jdbcType=VARCHAR},
+      </if>
+      <if test="aiAgentid != null" >
+        #{aiAgentid,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null" >
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="secret != null" >
+        #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="mchId != null" >
+        #{mchId,jdbcType=VARCHAR},
+      </if>
+      <if test="payKey != null" >
+        #{payKey,jdbcType=VARCHAR},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="privateKey != null" >
+        #{privateKey,jdbcType=VARCHAR},
+      </if>
+      <if test="publicKey != null" >
+        #{publicKey,jdbcType=VARCHAR},
+      </if>
+      <if test="skdAppId != null" >
+        #{skdAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="managerId != null" >
+        #{managerId,jdbcType=VARCHAR},
+      </if>
+      <if test="messageTemplate != null" >
+        #{messageTemplate,jdbcType=VARCHAR},
+      </if>
+      <if test="payTemplate != null" >
+        #{payTemplate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.Deploy" >
+    update deploy
+    <set >
+      <if test="corpid != null" >
+        CorpID = #{corpid,jdbcType=VARCHAR},
+      </if>
+      <if test="contactssecret != null" >
+        contactssecret = #{contactssecret,jdbcType=VARCHAR},
+      </if>
+      <if test="bosssecret != null" >
+        bosssecret = #{bosssecret,jdbcType=VARCHAR},
+      </if>
+      <if test="aisecret != null" >
+        aisecret = #{aisecret,jdbcType=VARCHAR},
+      </if>
+      <if test="bossAgentid != null" >
+        boss_AgentId = #{bossAgentid,jdbcType=VARCHAR},
+      </if>
+      <if test="aiAgentid != null" >
+        ai_AgentId = #{aiAgentid,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null" >
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="secret != null" >
+        secret = #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="mchId != null" >
+        mch_id = #{mchId,jdbcType=VARCHAR},
+      </if>
+      <if test="payKey != null" >
+        pay_key = #{payKey,jdbcType=VARCHAR},
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="privateKey != null" >
+        private_key = #{privateKey,jdbcType=VARCHAR},
+      </if>
+      <if test="publicKey != null" >
+        public_key = #{publicKey,jdbcType=VARCHAR},
+      </if>
+      <if test="skdAppId != null" >
+        skd_app_id = #{skdAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="managerId != null" >
+        manager_id = #{managerId,jdbcType=VARCHAR},
+      </if>
+      <if test="messageTemplate != null" >
+        message_template = #{messageTemplate,jdbcType=VARCHAR},
+      </if>
+      <if test="payTemplate != null" >
+        pay_template = #{payTemplate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.Deploy" >
+    update deploy
+    set CorpID = #{corpid,jdbcType=VARCHAR},
+      contactssecret = #{contactssecret,jdbcType=VARCHAR},
+      bosssecret = #{bosssecret,jdbcType=VARCHAR},
+      aisecret = #{aisecret,jdbcType=VARCHAR},
+      boss_AgentId = #{bossAgentid,jdbcType=VARCHAR},
+      ai_AgentId = #{aiAgentid,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR},
+      secret = #{secret,jdbcType=VARCHAR},
+      mch_id = #{mchId,jdbcType=VARCHAR},
+      pay_key = #{payKey,jdbcType=VARCHAR},
+      enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      private_key = #{privateKey,jdbcType=VARCHAR},
+      public_key = #{publicKey,jdbcType=VARCHAR},
+      skd_app_id = #{skdAppId,jdbcType=VARCHAR},
+      manager_id = #{managerId,jdbcType=VARCHAR},
+      message_template = #{messageTemplate,jdbcType=VARCHAR},
+      pay_template = #{payTemplate,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.UserInfo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="wx_soft_id" property="wxSoftId" jdbcType="VARCHAR" />
+    <result column="head_icon" property="headIcon" jdbcType="VARCHAR" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="last_action_time" property="lastActionTime" jdbcType="TIMESTAMP" />
+    <result column="last_attach_time" property="lastAttachTime" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="hx_im_login" property="hxImLogin" jdbcType="VARCHAR" />
+    <result column="hx_im_password" property="hxImPassword" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="last_staff_id" property="lastStaffId" jdbcType="VARCHAR" />
+    <result column="from_user_id" property="fromUserId" jdbcType="VARCHAR" />
+    <result column="last_enterprise_id" property="lastEnterpriseId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, open_id, create_time, modify_time, wx_soft_id, head_icon, nick_name, sex, last_action_time, 
+    last_attach_time, name, hx_im_login, hx_im_password, phone,last_staff_id,from_user_id,last_enterprise_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from user_info
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.UserInfo" >
+    insert into user_info (id, open_id, create_time, 
+      modify_time, wx_soft_id, head_icon, 
+      nick_name, sex, last_action_time, 
+      last_attach_time, name, hx_im_login, 
+      hx_im_password, phone)
+    values (#{id,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modifyTime,jdbcType=TIMESTAMP}, #{wxSoftId,jdbcType=VARCHAR}, #{headIcon,jdbcType=VARCHAR}, 
+      #{nickName,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{lastActionTime,jdbcType=TIMESTAMP}, 
+      #{lastAttachTime,jdbcType=TIMESTAMP}, #{name,jdbcType=VARCHAR}, #{hxImLogin,jdbcType=VARCHAR}, 
+      #{hxImPassword,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.UserInfo" >
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="modifyTime != null" >
+        modify_time,
+      </if>
+      <if test="wxSoftId != null" >
+        wx_soft_id,
+      </if>
+      <if test="headIcon != null" >
+        head_icon,
+      </if>
+      <if test="nickName != null" >
+        nick_name,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="lastActionTime != null" >
+        last_action_time,
+      </if>
+      <if test="lastAttachTime != null" >
+        last_attach_time,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="hxImLogin != null" >
+        hx_im_login,
+      </if>
+      <if test="hxImPassword != null" >
+        hx_im_password,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wxSoftId != null" >
+        #{wxSoftId,jdbcType=VARCHAR},
+      </if>
+      <if test="headIcon != null" >
+        #{headIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null" >
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="lastActionTime != null" >
+        #{lastActionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastAttachTime != null" >
+        #{lastAttachTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="hxImLogin != null" >
+        #{hxImLogin,jdbcType=VARCHAR},
+      </if>
+      <if test="hxImPassword != null" >
+        #{hxImPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.UserInfo" >
+    update user_info
+    <set >
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wxSoftId != null" >
+        wx_soft_id = #{wxSoftId,jdbcType=VARCHAR},
+      </if>
+      <if test="headIcon != null" >
+        head_icon = #{headIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null" >
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="lastActionTime != null" >
+        last_action_time = #{lastActionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastAttachTime != null" >
+        last_attach_time = #{lastAttachTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="hxImLogin != null" >
+        hx_im_login = #{hxImLogin,jdbcType=VARCHAR},
+      </if>
+      <if test="hxImPassword != null" >
+        hx_im_password = #{hxImPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="lastStaffId != null" >
+        last_staff_id = #{lastStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="fromUserId != null" >
+        from_user_id = #{fromUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastEnterpriseId != null" >
+        last_enterprise_id = #{lastEnterpriseId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.UserInfo" >
+    update user_info
+    set open_id = #{openId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      wx_soft_id = #{wxSoftId,jdbcType=VARCHAR},
+      head_icon = #{headIcon,jdbcType=VARCHAR},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      last_action_time = #{lastActionTime,jdbcType=TIMESTAMP},
+      last_attach_time = #{lastAttachTime,jdbcType=TIMESTAMP},
+      name = #{name,jdbcType=VARCHAR},
+      hx_im_login = #{hxImLogin,jdbcType=VARCHAR},
+      hx_im_password = #{hxImPassword,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

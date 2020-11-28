@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserAddressMapper">
+    <select id="getAddress" parameterType="com.vma.push.business.dto.req.store.ReqUserAddress"
+            resultType="com.vma.push.business.dto.rsp.store.RspUserAddress">
+
+      select
+      u.id,
+      u.is_default,
+      u.name,
+      u.phone,
+      u.address,
+      p.province_name,
+      c.city_name,
+      a.area_name
+      from user_address u ,province_info p,city_info c,area_info a
+      where  u.province_code=p.province_code and u.city_code=c.city_code
+     and u.area_code=a.area_code and u.status=1 and u.user_id=#{user_id}
+
+    </select>
+
+    <select id="getDefaul" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.store.RspDefaultAddress">
+select
+    u.id,
+    u.is_default,
+    u.name,
+    u.phone,
+    u.address,
+    p.province_name,
+    c.city_name,
+    a.area_name
+    from user_address u ,province_info p,city_info c,area_info a
+    where  u.province_code=p.province_code and u.city_code=c.city_code
+    and u.area_code=a.area_code and u.status=1 and u.user_id=#{user_id} and u.is_default=1
+
+    </select>
+
+    <select id="detail" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.store.RspDetailAddress">
+
+      select
+      u.id,
+      u.is_default,
+      u.name,
+      u.phone,
+      u.address,
+      p.province_name,
+      c.city_name,
+      a.area_name
+      from user_address u ,province_info p,city_info c,area_info a
+      where  u.province_code=p.province_code and u.city_code=c.city_code
+     and u.area_code=a.area_code and u.status=1 and u.id=#{id}
+    </select>
+
+    <update id="updateAllDefault" parameterType="java.lang.String">
+        update user_address set is_default=0 where user_id=#{user_id}
+    </update>
+
+    <select id="findProvinceCode" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT province_code FROM  province_info where province_name=#{province_name} limit 1
+    </select>
+
+    <select id="findCityCode" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT city_code from city_info where city_name=#{city_name} AND province_id=#{province_id} limit 1
+    </select>
+
+    <select id="findProvinceId" parameterType="java.lang.String" resultType="java.lang.String">
+        select id from province_info where province_code=#{province_code} limit 1
+    </select>
+
+    <select id="findCityId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT id from city_info where city_name=#{city_name} AND province_id=#{province_id} limit 1
+    </select>
+
+    <select id="findAreaCode" parameterType="java.lang.String" resultType="java.lang.String">
+        select area_code from area_info where area_name=#{area_name} and city_id=#{city_id} limit 1
+    </select>
+
+    <select id="findByUserId" parameterType="java.lang.String" resultType="com.vma.push.business.entity.UserAddress">
+        select * from user_address where user_id= #{user_id} and status = 1
+    </select>
+</mapper>

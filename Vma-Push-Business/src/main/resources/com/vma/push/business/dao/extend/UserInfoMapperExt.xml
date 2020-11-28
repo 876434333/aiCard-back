@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserInfoMapper">
+
+    <select id="selectByOpenId" resultType="com.vma.push.business.entity.UserInfo">
+        		SELECT
+                  id,
+                  open_id openId,
+                  create_time createTime,
+                  modify_time modifyTime,
+                  wx_soft_id wxSoftId,
+                  head_icon headIcon,
+                  nick_name nickName,
+                  sex,
+                  last_staff_id lastStaffId,
+                  last_enterprise_id lastEnterpriseId
+                FROM user_info
+                WHERE open_id = #{openId}
+    </select>
+
+    <select id="queryUsers" parameterType="com.vma.push.business.dto.req.userInfo.ReqQueryUserInfo"
+            resultType="com.vma.push.business.dto.rsp.userInfo.RspUserInfoList">
+        SELECT
+          u.nick_name,
+          usr.last_action_time,
+          usr.last_attach_time,
+          u.head_icon,
+          usr.froms,
+          usr.name,
+          u.id,
+          ifnull(usr.clinch_rate,usr.rate) rate
+
+        FROM user_info u, user_staff_rela usr
+        WHERE u.id = usr.user_id
+            <if test="type == 1 or type ==2 or type == 3">
+               AND usr.froms = #{type}
+            </if>
+              AND usr.staff_id = #{staff_id}
+        <if test="type == 4">
+            ORDER BY rate DESC
+        </if>
+        <if test="type == 5">
+            ORDER BY usr.last_attach_time DESC
+        </if>
+        <if test="type == 6">
+            ORDER BY usr.last_action_time DESC
+        </if>
+        <if test="type == 1 or type ==2 or type == 3">
+            ORDER BY usr.create_time DESC
+        </if>
+    </select>
+
+
+    <select id="queryUserByStaff" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.userInfo.RspUserDetail4Sale">
+		SELECT
+		  r.froms,
+		  ui.nick_name,
+		  r.mail,
+		  r.company,
+		  r.position,
+		  r.birthday,
+		  r.remark,
+		  IFNULL(r.name,ui.nick_name) name,
+		  u.head_icon,
+		  r.phone,
+		  r.create_time,
+		  r.id,
+		  ui.phone wx_phone
+		FROM user_staff_rela r,user_info u,user_info ui
+		WHERE r.user_id = u.id and ui.id=r.user_id
+		AND r.staff_id = #{staffId}
+		AND r.enterprise_id = #{enterpriseId}
+		AND r.user_id = #{userId}
+	</select>
+
+    <select id="queryUserLabels" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT li.label_name
+			FROM user_label_info uli, label_info li
+		WHERE uli.staff_id = #{staffId} AND uli.user_id = #{userId}
+	</select>
+
+    <select id="findUserInfoByOpenId" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.userInfo.RspUserInfo">
+        SELECT
+            id
+        from user_info WHERE  open_id=#{open_id}
+    </select>
+
+    <select id="findUserId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            id
+        from user_info WHERE  open_id=#{open_id}
+    </select>
+
+    <select id="userhead" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspHeadName">
+        select head_icon,nick_name from user_info where id=#{id}
+    </select>
+    <select id="openByUserId" parameterType="java.lang.String" resultType="java.lang.String">
+      select open_id from user_info where id=#{userId}
+    </select>
+    <select id="userInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.superback.RspLoginInfo">
+        select id,nick_name,head_icon,sex FROM user_info where id=#{id}
+    </select>
+
+    <select id="isPhone" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT if(phone,1,0) FROM user_info WHERE id = #{id}
+    </select>
+
+    <select id="customOfStaffOrderByUserNumber" parameterType="com.vma.push.business.dto.req.staff.ReqCustomList" resultType="com.vma.push.business.dto.rsp.staff.RspCustomList">
+        SELECT
+            u.id,
+            u.nick_name,
+            u.head_icon,
+            usr.last_attach_time,
+            ifnull(usr.clinch_rate,usr.rate) close_rate,
+            usr.clinch_time,
+            usr.staff_id
+        FROM user_info u, user_staff_rela usr
+        WHERE u.id = usr.user_id AND staff_id=#{staff_id}
+        <if test="day_number != null and day_number != ''">
+            <if test="day_number lt 2">
+                AND TO_DAYS(NOW()) = TO_DAYS(usr.create_time)+#{day_number}
+            </if>
+            <if test="day_number gt 2">
+                AND DATE_SUB(CURDATE(), INTERVAL #{day_number} DAY) <![CDATA[<]]> date(usr.create_time)
+            </if>
+        </if>
+        GROUP BY u.id
+    </select>
+
+    <select id="customOfStaffOrderByInteract" parameterType="com.vma.push.business.dto.req.staff.ReqCustomList" resultType="com.vma.push.business.dto.rsp.staff.RspCustomList">
+        SELECT
+        u.id,
+        u.nick_name,
+        u.head_icon,
+        usr.last_attach_time,
+        ifnull(usr.clinch_rate,usr.rate) close_rate,
+        usr.clinch_time,
+        usr.staff_id
+        FROM user_info u LEFT JOIN user_staff_rela usr on u.id=usr.user_id
+        WHERE 1= 1
+        AND u.id in (
+            SELECT
+              user_id
+            FROM
+              click_action_log
+            WHERE
+              1=1
+            <if test="user_type != null and user_type != ''">
+                <if test="user_type ==1">
+                    AND click_action_log.action_code=1000
+                </if>
+                <if test="user_type ==2">
+                    AND click_action_log.action_code=1018
+                </if>
+            </if>
+            <if test="day_number != null and day_number != ''">
+                <if test="day_number lt 2">
+                    AND TO_DAYS(NOW()) = TO_DAYS(usr.create_time)+#{day_number}
+                </if>
+                <if test="day_number gt 2">
+                    AND DATE_SUB(CURDATE(), INTERVAL #{day_number} DAY) <![CDATA[<]]> date(click_action_log.create_time)
+                </if>
+            </if>
+            AND employee_id=#{staff_id}
+            GROUP BY user_id
+        ) AND usr.staff_id=#{staff_id}
+    </select>
+
+    <select id="customOfStaffOrderByClosedRate" parameterType="com.vma.push.business.dto.req.staff.ReqCustomList" resultType="com.vma.push.business.dto.rsp.staff.RspCustomList">
+        SELECT
+        u.id,
+        u.nick_name,
+        u.head_icon,
+        usr.last_attach_time,
+        usr.rate close_rate,
+        usr.clinch_time,
+        usr.staff_id
+        FROM user_info u LEFT JOIN user_staff_rela usr on u.id=usr.user_id
+        WHERE 1=1
+        AND u.id IN (
+            SELECT user_id FROM user_staff_rela usr2 WHERE ifnull(usr2.clinch_rate,usr2.rate) BETWEEN #{low_close_rate} AND #{hight_close_rate}
+            AND usr2.staff_id = #{staff_id}
+        ) AND usr.staff_id = #{staff_id} GROUP BY u.id
+    </select>
+    <select id="userShopCartList" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspUserCartList">
+        select s.id,s.num,os.id offer_id,os.offer_name ,os.express_fee,
+        n.id norms_id,n.name norms_name,n.norms_pic,
+        n.offer_leave,n.offer_price
+        from shop_cart s
+        left join shop_offer_spec os on s.offer_id=os.id
+        left join shop_offer_norms n on s.norms_id=n.id
+        where s.user_id=#{userId} and s.staff_id = #{staffId}
+        order by s.create_time DESC
+
+    </select>
+    <select id="getUserInfoListByLastStaffId" parameterType="java.util.List" resultType="java.lang.String">
+        select id from user_info where last_staff_id in
+        <foreach collection="staffIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+</mapper>
+

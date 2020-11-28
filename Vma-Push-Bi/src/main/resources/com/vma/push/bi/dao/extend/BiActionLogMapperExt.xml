@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.BiActionLogMapper" >
+  <select id="queryActionNum" resultType="java.lang.Long" parameterType="java.lang.String">
+      SELECT ifnull(sum(num),0) FROM bi_action_log WHERE staff_id = #{staffId} AND action_code = #{actionCode}
+  </select>
+
+  <!--<select id="countAction" resultType="java.lang.Long">-->
+      <!--SELECT (-->
+      <!--SELECT sum(num)-->
+      <!--FROM bi_action_log-->
+      <!--WHERE enterprise_id = #{enterpriseId}-->
+      <!--<if test="departmentId != null and departmentid != '' ">-->
+          <!--AND department_id = #{departmentId}-->
+      <!--</if>-->
+      <!--<if test="code != null and code != '' ">-->
+          <!--AND action_code = #{code}-->
+      <!--</if>-->
+      <!--<if test="day != null">-->
+          <!--AND to_days(now())-to_days(create_time) <![CDATA[<=]]> #{day}-->
+      <!--</if>-->
+      <!--<if test="staffId != null and staffId != ''">-->
+          <!--AND staff_id = #{staffId}-->
+      <!--</if>-->
+      <!--)+-->
+
+      <!--(-->
+      <!--SELECT count(1) num FROM click_action_log WHERE date_format(create_time,'%Y-%m-%d') = curdate()-->
+      <!--AND enterprise_id = #{enterpriseId}-->
+      <!--<if test="departmentId != null and departmentid != '' ">-->
+          <!--AND department_id = #{departmentId}-->
+      <!--</if>-->
+      <!--<if test="code != null and code != '' ">-->
+          <!--AND action_code = #{code}-->
+      <!--</if>-->
+      <!--<if test="day != null">-->
+          <!--AND to_days(now())-to_days(create_time) <![CDATA[<=]]> #{day}-->
+      <!--</if>-->
+      <!--<if test="staffId != null and staffId != ''">-->
+          <!--AND employee_id = #{staffId}-->
+      <!--</if>-->
+      <!--)-->
+      <!--FROM dual;-->
+  <!--</select>-->
+
+  <!--<select id="countEveryAction" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem" parameterType="java.lang.String">-->
+    <!--SELECT-->
+      <!--max(t.num) 'value',-->
+      <!--t.action_code name-->
+    <!--FROM (-->
+           <!--SELECT-->
+             <!--sum(num) num,-->
+             <!--action_code-->
+           <!--FROM bi_action_log-->
+           <!--WHERE enterprise_id = #{enterpriseId}-->
+           <!--<if test="departmentId != null and departmentId != '' ">-->
+               <!--AND department_id = #{departmentId}-->
+           <!--</if>-->
+           <!--GROUP BY action_code, staff_id) t-->
+    <!--GROUP BY t.action_code-->
+  <!--</select>-->
+
+    <!--<select id="countActionsByStaff" parameterType="java.util.Map" resultType="java.lang.Long">-->
+        <!--SELECT ifnull(sum(num),0) num FROM bi_action_log-->
+        <!--WHERE staff_id = #{staffId}-->
+        <!--AND enterprise_id = #{enterpriseId} AND department_id = #{departmentId}-->
+        <!--AND action_code IN-->
+        <!--<foreach collection="codes" item="code" index="index"-->
+                 <!--open="(" close=")" separator=",">-->
+            <!--#{code}-->
+        <!--</foreach>-->
+    <!--</select>-->
+
+    <!--<select id="countAllActionNum" parameterType="java.util.Map" resultType="com.vma.push.business.dto.rsp.staff.RspStaffAnalysis">-->
+        <!--SELECT-->
+          <!--s.*,-->
+          <!--ifnull(t.num, 0) num-->
+        <!--FROM staff s LEFT JOIN (-->
+                                 <!--SELECT-->
+                                   <!--sum(num) num,-->
+                                   <!--log.staff_id-->
+                                 <!--FROM bi_action_log log-->
+                                 <!--GROUP BY log.staff_id-->
+                                 <!--ORDER BY num-->
+                               <!--) t ON s.id = t.staff_id-->
+        <!--WHERE s.enterprise_id = #{enterpriseId} AND s.department_id = #{departmentId}    ORDER BY  num DESC-->
+    <!--</select>-->
+</mapper>

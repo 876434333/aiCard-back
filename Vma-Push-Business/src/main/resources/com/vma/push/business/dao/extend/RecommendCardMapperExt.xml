@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.RecommendCardMapper">
+    <select id="getRecommendStaffList" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.superback.RspGetRecommendCardList">
+        SELECT
+			staff.id staffId,
+			staff.name name,
+			staff.head_icon headIcon,
+			staff.phone phone,
+			DATE_FORMAT(staff.create_time,'%Y-%m-%d') createTime,
+			enterprise.name enterpriseName
+        FROM
+        	staff
+        inner JOIN enterprise ON staff.enterprise_id = enterprise.id and enterprise.status = 1
+        <if test="enterpriseName != null">
+            and enterprise.name LIKE #{enterpriseName}"%"
+        </if>
+        WHERE 1=1 and staff.status = 1
+        <if test="phone != null">
+            and staff.phone LIKE "%"#{phone}"%"
+        </if>
+        AND (SELECT COUNT(1) AS num FROM recommend_card WHERE recommend_card.staff_id = staff.id AND
+        recommend_card.status = 1) = 0
+        LIMIT 30
+    </select>
+
+    <select id="getRecommendCardList" resultType="com.vma.push.business.dto.rsp.superback.RspGetRecommendCardList">
+       SELECT
+	     staff.id staffId,
+	     staff. NAME NAME,
+	     staff.head_icon headIcon,
+	     staff.phone phone,
+	     DATE_FORMAT(staff.create_time,'%Y-%m-%d') createTime,
+	     enterprise. NAME enterpriseName,
+	     recommend_card.view_number viewNum,
+	     recommend_card.id recommendId
+       FROM  recommend_card
+       INNER JOIN staff ON recommend_card.staff_id = staff.id and staff.status = 1
+       INNER JOIN enterprise ON staff.enterprise_id = enterprise.id and enterprise.status = 1
+      WHERE recommend_card. STATUS = 1
+    </select>
+	<select id="miniGetRecommendCard" resultType="com.vma.push.business.dto.rsp.mini.RepRecommendCard">
+		select
+		 staff.id staffId,
+	     staff.NAME NAME,
+	     staff.head_icon headIcon,
+	     enterprise.NAME enterpriseName,
+	     enterprise.id enterpriseId,
+	     staff.department_id departmentId
+       FROM  recommend_card
+       INNER JOIN staff ON recommend_card.staff_id = staff.id and staff.status = 1
+       INNER JOIN enterprise ON staff.enterprise_id = enterprise.id and enterprise.status = 1
+      WHERE recommend_card. STATUS = 1 order by view_order desc
+	</select>
+	<select id="getRecommendCardByStaffId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from recommend_card
+		where staff_id = #{staffId,jdbcType=VARCHAR} and status = 1 limit 1
+	</select>
+</mapper>

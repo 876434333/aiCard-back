@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.OrderMapper">
+
+
+    <select id="findAllOrder" resultType="com.vma.push.business.dto.rsp.RspOrder">
+        select shop_order.id, shop_order.order_nbr,shop_offer_spec.offer_name,user_info.nick_name,shop_order.link_phone,shop_order.offer_num,shop_order.total_price,staff.name,shop_order.create_time,shop_order.status
+        from shop_order,staff,user_info,shop_offer_spec
+        where shop_order.offer_id=shop_offer_spec.id
+        and shop_order.user_id=user_info.id
+        and shop_order.staff_id=staff.id
+    </select>
+
+
+    <select id="findOrderBySelect" parameterType="com.vma.push.business.dto.req.ReqOrderSelect"
+            resultType="com.vma.push.business.dto.rsp.RspOrder">
+        select shop_order.id,
+        shop_order.order_nbr,
+        shop_offer_spec.offer_name,
+        user_info.nick_name,
+        shop_order.link_phone,
+        shop_order.offer_num,
+        shop_order.total_price,
+        staff.name,
+        shop_order.create_time,
+        shop_order.status,
+        shop_order.address,
+        shop_order.link_man,
+        shop_order.express_name
+        from shop_order,staff,user_info,shop_offer_spec
+        <where>
+            <if test="order_nbr != null and order_nbr != ''">
+                AND shop_order.order_nbr LIKE '%${order_nbr}%'
+            </if>
+            <if test="status != null ">
+                AND shop_order.status = #{status}
+            </if>
+            <if test="nick_name != null and nick_name != ''">
+                AND user_info.nick_name LIKE '%${nick_name}%'
+            </if>
+            <if test="begin_time != null">
+                AND shop_order.create_time &gt;= #{begin_time}
+            </if>
+            <if test="end_time != null">
+                and shop_order.create_time &lt;= #{end_time}
+            </if>
+            <if test="link_phone != null and link_phone != ''">
+                AND shop_order.link_phone LIKE '%${link_phone}%'
+            </if>
+            and shop_order.offer_id=shop_offer_spec.id and shop_order.user_id=user_info.id and shop_order.staff_id=staff.id and shop_order.enterprise_id=#{enterprise_id}
+        </where>
+        order by  shop_order.create_time DESC
+    </select>
+    <select id="orderByStaffid" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.RspStaffOrder">
+
+        select o.id,o.order_nbr,ons.norms_pic shop_offer_img,o.status, o.total_price,o.create_time,os.offer_name,ons.name norms_name,od.total_price_discount,od.id order_detail_id
+        from shop_order o
+        LEFT JOIN shop_order_detail od ON o.id = od.order_id
+        LEFT JOIN shop_offer_norms ons ON od.norms_id = ons.id
+        LEFT JOIN shop_offer_spec os ON od.offer_id = os.id
+        where o.staff_id=#{staffid} AND o.enterprise_id=#{enid}
+        ORDER BY o.create_time desc
+    </select>
+
+    <select id="OrderCount" parameterType="java.lang.String"
+            resultType="java.lang.Integer">
+
+        select count(1)
+        from shop_order o
+        where o.staff_id=#{staffid} AND o.enterprise_id=#{enid}
+        ORDER BY o.create_time desc
+    </select>
+
+    <select id="orderByUserid" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspUserOrder">
+         select
+             o.id,
+             o.order_nbr,
+             o.offer_img,
+             o.status,
+             o.total_price,
+             o.create_time,
+             o.offer_id,
+             os.offer_name
+        from shop_order o left join shop_offer_spec os on o.offer_id=os.id
+        where o.user_id=#{userid}
+        order by o.create_time DESC
+    </select>
+    <select id="orderDetail" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.RspOrderDetail">
+            select
+            o.id,
+            os.offer_name,
+            o.offer_img,
+            o.order_nbr,
+            o.total_price,
+            o.link_phone,
+            o.link_man,
+            o.create_time,
+            o.status,
+            o.offer_img ,
+            o.offer_id,
+            o.offer_num,
+            os.offer_price
+            from shop_order o left join shop_offer_spec os on o.offer_id=os.id
+            where o.id=#{id}
+    </select>
+
+    <select id="saleCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select case when sum(offer_num) is null then 0 else sum(offer_num) END  from shop_order where offer_id=#{id} and status=1
+    </select>
+
+    <select id="findCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select  count(1) from shop_order where  user_id=#{userid};
+    </select>
+
+    <select id="getByNbr" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Order">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM shop_order
+        WHERE order_nbr = #{orderNbr} limit 1
+    </select>
+    <select id="userOrder" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrder">
+        select id,`status` ,create_time,total_price_discount,total_price from shop_order
+        where user_id=#{userId} and staff_id=#{staffId}
+        <if test="type!=null">
+            <if test="type == 1 or type == 4">
+                AND status in (1,4)
+            </if>
+            <if test="type != 1 and type != 4">
+                AND status = #{type}
+            </if>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="staffOrder" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrder">
+        select id,`status` ,create_time,total_price_discount,total_price from shop_order
+        where staff_id=#{staffId}
+        <if test="type!=null">
+            <if test="type == 1 or type == 4">
+                AND status in (1,4)
+            </if>
+            <if test="type != 1 and type != 4">
+                AND status = #{type}
+            </if>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="enterpriseOrder" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrder">
+        select id,`status` ,create_time,total_price_discount,total_price from shop_order
+        where enterprise_id=#{enterprise_id}
+        <if test="type!=null">
+            <if test="type == 1 or type == 4">
+                AND status in (1,4)
+            </if>
+            <if test="type != 1 and type != 4">
+                AND status = #{type}
+            </if>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="orderDetailnew" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrderDetail2">
+        select os.offer_name,n.norms_pic,a.offer_num,a.offer_price,a.offer_price_discount,n.name norms_name  from shop_order_detail a
+        LEFT JOIN shop_offer_spec os on a.offer_id=os.id
+        LEFT join shop_offer_norms n on a.norms_id=n.id
+        where order_id=#{orderid}
+    </select>
+    <select id="orderCount" parameterType="com.vma.push.business.dto.req.store.ReqUserType" resultType="java.lang.Integer">
+        select count(1) from shop_order
+        where user_id=#{user_id} and staff_id=#{staff_id}
+        <if test="type == 4">
+          AND status in (1,4)
+        </if>
+        <if test="type != 4">
+            AND status = #{type}
+        </if>
+    </select>
+    <update id="cancelOrder" parameterType="java.lang.String">
+        update shop_order set status='2' where id=#{id}
+    </update>
+    <select id="orderDetails" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrderDetails">
+    select link_man,link_phone,total_price,total_price_discount,express_fee,status,create_time,order_nbr,address
+    from shop_order where id=#{id}
+    </select>
+    <select id="orderInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrderInfo">
+        select n.norms_pic,os.offer_name,n.name norms_name,
+        a.offer_price order_price,a.offer_num offer_num,
+        a.offer_price_discount order_price_discount
+        from shop_order_detail a
+        left JOIN shop_offer_spec os on a.offer_id=os.id
+        left join shop_offer_norms n on a.norms_id=n.id
+        where a.order_id=#{id}
+    </select>
+    <select id="offerNorms" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspNorms">
+        select name norms_name,id norms_id,is_default,offer_leave,norms_pic,offer_price
+        from shop_offer_norms where offer_id=#{id}
+    </select>
+    <select id="priceRange" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspPriceRange">
+        select IFNULL(MIN(offer_price),0) min_price,IFNULL(MAX(offer_price),0) max_price FROM shop_offer_norms
+        where offer_id=#{id}
+    </select>
+    <select id="orderList" parameterType="com.vma.push.business.dto.req.store.ReqOrderPage" resultType="com.vma.push.business.dto.rsp.store.RspOrderList">
+        select o.id,o.order_nbr,o.create_time,o.total_price,
+        o.total_price_discount,b.name staff_name,o.extract_value,o.express_fee,
+        o.link_man,o.link_phone,o.`status`,o.address,u.nick_name,
+        o.express_name,o.total_price-o.total_price_discount price_discount
+        from shop_order o left join staff b on o.staff_id=b.id
+        left join user_info u on o.user_id=u.id
+        left join shop_order_detail od on od.order_id=o.id
+        left join shop_offer_spec s on od.offer_id=s.id
+        where o.enterprise_id=#{enterprise_id}
+        <if test="status!=null">
+            and o.`status`=#{status}
+        </if>
+        <if test="order_nbr!=null">
+            and o.order_nbr like '%${order_nbr}%'
+        </if>
+        <if test="link_man!=null">
+            and o.link_man like '%${link_man}%'
+        </if>
+        <if test="link_phone!=null">
+            and o.link_phone like '%${link_phone}%'
+        </if>
+        <if test="create_time_begin!=null">
+            and  o.create_time<![CDATA[>=]]> #{create_time_begin}
+        </if>
+        <if test="create_time_end!=null">
+            and o.create_time<![CDATA[<=]]> #{create_time_end}
+        </if>
+        <if test="finish_time_begin!=null">
+            and o.finish_time<![CDATA[>=]]> #{finish_time_begin}
+        </if>
+        <if test="finish_time_end!=null">
+            and o.finish_time<![CDATA[<=]]> #{finish_time_end}
+        </if>
+        <if test="offer_name!=null">
+            and s.offer_name like '%${offer_name}%'
+        </if>
+        <if test="staff_name!=null">
+            and b.name like '%${staff_name}%'
+        </if>
+        group by o.id
+        order BY o.create_time DESC
+
+    </select>
+
+
+    <select id="orderStatisticList" parameterType="com.vma.push.business.dto.req.store.ReqOrderStatistic" resultType="com.vma.push.business.dto.rsp.store.RspOrderStatistic">
+        select s.name,s.head_icon,d.name department_name,s.phone,ifnull(t.num,0) order_num, ifnull(t.price,0) total_price,t.staff_id from department d, staff  s left join (
+        select
+        count(staff_id) num,
+        sum(shop_order.total_price_discount) price,
+        shop_order.staff_id
+        from shop_order
+        where shop_order.enterprise_id = #{enterprise_id}
+        <if test="department_id != null and department_id != '' ">
+            and
+            shop_order.department_id = #{department_id}
+        </if>
+
+        <if test="begin_time != null">
+            and create_time &gt;= #{begin_time}
+        </if>
+
+        <if test="end_time != null">
+            and create_time &lt;= #{begin_time}
+        </if>
+        and `status` in (1,4,5,6)
+        group by shop_order.staff_id) t on s.id = t.staff_id where s.enterprise_id = #{enterprise_id} and s.status = 1
+        and d.id = s.department_id and d.enterprise_id = s.enterprise_id
+        <if test="staff_name != null">
+            and s.name LIKE '%${staff_name}%'
+        </if>
+    </select>
+    <select id="findDetailById" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOrderListDetail">
+        select a.offer_num num,a.offer_price,os.offer_name,n.norms_pic from shop_order_detail a
+LEFT join shop_offer_spec os on a.offer_id=os.id
+LEFT JOIN shop_offer_norms n on a.norms_id=n.id
+where a.order_id=#{orderId}
+    </select>
+
+    <select id="findOfferLevel" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select offer_leave from  shop_offer_norms where  id = #{norm_id}
+    </select>
+
+    <update id="updateOfferLevel">
+   update shop_offer_norms set offer_leave = #{param1} where  id = #{param2}
+    </update>
+
+    <select id="findNormAndNumByOrderId" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspNormAndNum">
+        select sum(offer_num) offer_num,norms_id,offer_id from shop_order_detail where  order_id=#{order_id} group by norms_id;
+    </select>
+
+    <select id="findOfferNormsName" parameterType="java.lang.String" resultType="java.lang.String">
+    select name from shop_offer_norms where id =#{norms_id}
+    </select>
+
+    <update id="updateOfferNormStatus" parameterType="java.lang.String">
+        update shop_offer_norms set status = 0 where  id = #{norms_id}
+    </update>
+</mapper>

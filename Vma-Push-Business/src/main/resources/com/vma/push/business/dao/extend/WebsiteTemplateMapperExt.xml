@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.WebsiteTemplateMapper" >
+  <delete id="delete" parameterType="java.lang.String">
+    DELETE FROM website_template WHERE enterprise_id = #{enterpriseId}
+  </delete>
+
+  <select id="findWebsiteByEnterprise" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspWebsite">
+    SELECT id,text_content,type,config FROM website_template where enterprise_id=#{id} order BY order_num ASC
+  </select>
+</mapper>

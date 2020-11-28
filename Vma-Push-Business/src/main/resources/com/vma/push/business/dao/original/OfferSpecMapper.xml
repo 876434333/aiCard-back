@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.OfferSpecMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.OfferSpec" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="offer_name" property="offerName" jdbcType="VARCHAR" />
+    <result column="offer_price" property="offerPrice" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="create_staff_id" property="createStaffId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="VARCHAR" />
+    <result column="discount" property="discount" jdbcType="DECIMAL" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+    <result column="offer_sale" property="offerSale" jdbcType="INTEGER" />
+    <result column="is_pay_online" property="isPayOnline" jdbcType="INTEGER" />
+    <result column="is_delete" property="isDelete" jdbcType="INTEGER" />
+    <result column="onsale_time" property="onsaleTime" jdbcType="TIMESTAMP" />
+    <result column="extract_type" property="extractType" jdbcType="INTEGER" />
+    <result column="extract_value" property="extractValue" jdbcType="DECIMAL" />
+    <result column="extract_per" property="extractPer" jdbcType="DECIMAL" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="express_fee" property="expressFee" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, offer_name, offer_price, create_time, update_time, code, create_staff_id, status, 
+    enterprise_id, discount, version, offer_sale, is_pay_online, is_delete, onsale_time, 
+    extract_type, extract_value, extract_per, type, express_fee
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_offer_spec
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from shop_offer_spec
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.OfferSpec" >
+    insert into shop_offer_spec (id, offer_name, offer_price,
+      create_time, update_time, code, 
+      create_staff_id, status, enterprise_id, 
+      discount, version, offer_sale, 
+      is_pay_online, is_delete, onsale_time, 
+      extract_type, extract_value, extract_per, 
+      type, express_fee)
+    values (#{id,jdbcType=VARCHAR}, #{offerName,jdbcType=VARCHAR}, #{offerPrice,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{code,jdbcType=VARCHAR}, 
+      #{createStaffId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{enterpriseId,jdbcType=VARCHAR}, 
+      #{discount,jdbcType=DECIMAL}, #{version,jdbcType=VARCHAR}, #{offerSale,jdbcType=INTEGER}, 
+      #{isPayOnline,jdbcType=INTEGER}, #{isDelete,jdbcType=INTEGER}, #{onsaleTime,jdbcType=TIMESTAMP}, 
+      #{extractType,jdbcType=INTEGER}, #{extractValue,jdbcType=DECIMAL}, #{extractPer,jdbcType=DECIMAL}, 
+      #{type,jdbcType=INTEGER}, #{expressFee,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.OfferSpec" >
+    insert into shop_offer_spec
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="offerName != null" >
+        offer_name,
+      </if>
+      <if test="offerPrice != null" >
+        offer_price,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="code != null" >
+        code,
+      </if>
+      <if test="createStaffId != null" >
+        create_staff_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="discount != null" >
+        discount,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="offerSale != null" >
+        offer_sale,
+      </if>
+      <if test="isPayOnline != null" >
+        is_pay_online,
+      </if>
+      <if test="isDelete != null" >
+        is_delete,
+      </if>
+      <if test="onsaleTime != null" >
+        onsale_time,
+      </if>
+      <if test="extractType != null" >
+        extract_type,
+      </if>
+      <if test="extractValue != null" >
+        extract_value,
+      </if>
+      <if test="extractPer != null" >
+        extract_per,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="expressFee != null" >
+        express_fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="offerName != null" >
+        #{offerName,jdbcType=VARCHAR},
+      </if>
+      <if test="offerPrice != null" >
+        #{offerPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="createStaffId != null" >
+        #{createStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="offerSale != null" >
+        #{offerSale,jdbcType=INTEGER},
+      </if>
+      <if test="isPayOnline != null" >
+        #{isPayOnline,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null" >
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="onsaleTime != null" >
+        #{onsaleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="extractType != null" >
+        #{extractType,jdbcType=INTEGER},
+      </if>
+      <if test="extractValue != null" >
+        #{extractValue,jdbcType=DECIMAL},
+      </if>
+      <if test="extractPer != null" >
+        #{extractPer,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="expressFee != null" >
+        #{expressFee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.OfferSpec" >
+    update shop_offer_spec
+    <set >
+      <if test="offerName != null" >
+        offer_name = #{offerName,jdbcType=VARCHAR},
+      </if>
+      <if test="offerPrice != null" >
+        offer_price = #{offerPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="createStaffId != null" >
+        create_staff_id = #{createStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        discount = #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="offerSale != null" >
+        offer_sale = #{offerSale,jdbcType=INTEGER},
+      </if>
+      <if test="isPayOnline != null" >
+        is_pay_online = #{isPayOnline,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="onsaleTime != null" >
+        onsale_time = #{onsaleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="extractType != null" >
+        extract_type = #{extractType,jdbcType=INTEGER},
+      </if>
+      <if test="extractValue != null" >
+        extract_value = #{extractValue,jdbcType=DECIMAL},
+      </if>
+      <if test="extractPer != null" >
+        extract_per = #{extractPer,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="expressFee != null" >
+        express_fee = #{expressFee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.OfferSpec" >
+    update shop_offer_spec
+    set offer_name = #{offerName,jdbcType=VARCHAR},
+      offer_price = #{offerPrice,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      code = #{code,jdbcType=VARCHAR},
+      create_staff_id = #{createStaffId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      discount = #{discount,jdbcType=DECIMAL},
+      version = #{version,jdbcType=VARCHAR},
+      offer_sale = #{offerSale,jdbcType=INTEGER},
+      is_pay_online = #{isPayOnline,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      onsale_time = #{onsaleTime,jdbcType=TIMESTAMP},
+      extract_type = #{extractType,jdbcType=INTEGER},
+      extract_value = #{extractValue,jdbcType=DECIMAL},
+      extract_per = #{extractPer,jdbcType=DECIMAL},
+      type = #{type,jdbcType=INTEGER},
+      express_fee = #{expressFee,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

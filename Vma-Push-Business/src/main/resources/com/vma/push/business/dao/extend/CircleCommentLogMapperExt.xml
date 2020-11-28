@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.CircleCommentLogMapper" >
+    <resultMap id="CommentInfo" type="com.vma.push.business.dto.rsp.RspCommentInfo" >
+        <result column="name" property="user_name" jdbcType="VARCHAR" />
+        <result column="user_id" property="user_id" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="modify_time" property="modify_time" jdbcType="TIMESTAMP" />
+        <result column="head_icon" property="head_icon" jdbcType="VARCHAR" />
+        <result column="id" property="id" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="getCommentInfo" resultType="com.vma.push.business.dto.rsp.RspCommentInfo" parameterType="java.lang.String" >
+        select a.user_id,a.modify_time,a.content,a.id,a.flag,
+            CASE  a.flag
+            when '0' THEN b.`name`
+            when '2' THEN c.`nick_name`
+			when '1' THEN d.`name`
+            END as user_name,
+            CASE a.flag
+            when '0' THEN b.`head_icon`
+            when '2' THEN c.`head_icon`
+			when '1' THEN d.`head_icon`
+            END as head_icon
+        from circle_comment_log a left join staff b  on a.user_id=b.id
+        left join user_info c on a.user_id=c.id
+        left join enterprise d on a.user_id=d.id
+        where a.circle_id=#{id}
+        ORDER BY a.modify_time
+    </select>
+
+    <select id="getAllComment" resultType="com.vma.push.business.dto.rsp.RspCircleCommentFromCompany" parameterType="com.vma.push.business.dto.req.ReqCircleComment" >
+        SELECT
+            ccl.id, ccl.content comment_content,ccl.user_id,ccl.circle_id,ccl.create_time,usr.name staff_name,usr.station,cc.content circle_content,cc.cover,u.head_icon,u.nick_name user_name
+        FROM
+            circle_comment_log ccl
+        LEFT JOIN circle_company cc ON ccl.circle_id = cc.id
+        LEFT JOIN (
+            select user_id,s.name,s.station FROM user_staff_rela LEFT JOIN staff s on user_staff_rela.staff_id=s.id
+        ) usr on ccl.user_id = usr.user_id
+        LEFT JOIN user_info u on ccl.user_id = u.id
+        WHERE 1=1
+        <if test="related != null ">
+            AND (ccl.content LIKE CONCAT('%',#{related},'%') OR cc.content LIKE CONCAT('%',#{related},'%'))
+        </if>
+        <if test="begin_time != null ">
+            AND ccl.create_time <![CDATA[>=]]> date_format(#{begin_time},'%y-%m-%d 00:00:00')
+        </if>
+        <if test="end_time != null ">
+            AND ccl.create_time <![CDATA[<=]]> date_format(#{end_time},'%y-%m-%d 23:59:59')
+        </if>
+        <if test="query_type == 0">
+            and cc.enterprise_id = #{employee_id} GROUP BY ccl.id
+        </if>
+        <if test="query_type == 1">
+            and cc.flag=1 AND cc.enterprise_id = #{employee_id} GROUP BY ccl.id
+        </if>
+        <if test="query_type == 2">
+            and cc.flag=2 AND cc.enterprise_id = #{employee_id} GROUP BY ccl.id
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <delete id="deleteCommentByCircleId" parameterType="java.lang.String">
+        DELETE from circle_comment_log where circle_id=#{id}
+    </delete>
+    <update id="addcomment" parameterType="java.lang.String">
+        update circle_company set ping_num=ping_num+'1'
+        where id=#{id}
+    </update>
+
+    <update id="delcomment" parameterType="java.lang.String">
+        update circle_company set ping_num=ping_num-'1'
+        where id=(select circle_id from circle_comment_log where id=#{id})
+    </update>
+
+</mapper>

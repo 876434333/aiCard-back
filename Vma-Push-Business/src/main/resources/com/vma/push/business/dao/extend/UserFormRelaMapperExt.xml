@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserFormRelaMapper">
+    <insert id="userformAdd" parameterType="com.vma.push.business.dto.req.ReqUserFormAdd">
+        INSERT INTO user_form_rela (`id`, `user_id`, `form_id`,`create_time`)
+        VALUES (#{id}, #{userId}, #{formId},#{times});
+    </insert>
+    <select id="isexist" parameterType="com.vma.push.business.dto.req.ReqUserFormAdd" resultType="java.lang.Integer">
+        SELECT  count(1) from user_form_rela where user_id=#{userId} and form_id=#{formId}
+    </select>
+    <delete id="userformDel" parameterType="com.vma.push.business.dto.req.ReqUserFormAdd">
+        DELETE from user_form_rela where user_id=#{userId} and form_id=#{formId}
+    </delete>
+    <select id="getForm" parameterType="java.lang.String" resultType="java.lang.String">
+
+  select form_id from user_form_rela  where user_id=#{userid} and DATEDIFF(NOW(),create_time)<![CDATA[<]]>7 ORDER BY create_time LIMIT 1
+    </select>
+</mapper>

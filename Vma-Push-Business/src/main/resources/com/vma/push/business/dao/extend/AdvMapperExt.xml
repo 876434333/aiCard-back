@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.AdvMapper" >
+
+    <select id="findAdvPage" resultType="com.vma.push.business.dto.rsp.RspAdv">
+        select adv.id, adv.location, adv.a_order,adv.title,adv.href,adv.create_time,staff.name,adv.status from shop_adv adv,staff where adv.create_staff_id=staff.id ORDER BY adv.a_order DESC
+    </select>
+
+
+    <select id="findAdvBySelect" parameterType="com.vma.push.business.dto.req.ReqAdvSelect" resultType="com.vma.push.business.dto.rsp.RspAdv">
+        select a.id,a.location, a.a_order,a.title,a.href, a.img_url,a.create_time,e.manager_name name,a.status from shop_adv a,enterprise e
+        <where>
+            <if test="title != null and title != ''">
+                AND a.title LIKE '%${title}%'
+            </if>
+            <if test="location != null and location != ''">
+                AND a.location LIKE '%${location}%'
+            </if>
+            <if test="status != null ">
+                AND a.status = #{status}
+            </if>
+            AND  a.enterprise_id = #{enterprise_id}
+           and  a.enterprise_id=e.id ORDER BY a.create_time DESC
+        </where>
+    </select>
+
+    <select id="findAdvBySelectNew" parameterType="com.vma.push.business.dto.req.ReqAdvSelectNew" resultType="com.vma.push.business.dto.rsp.RspAdvNew">
+        select a.id,a.location, a.a_order,a.title,a.href, a.img_url,a.create_time,e.manager_name name,a.status,a.begin_time,a.finish_time from shop_adv a,enterprise e
+        <where>
+            <if test="title != null and title != ''">
+                AND a.title LIKE '%${title}%'
+            </if>
+            <if test="finish_begin_time != null">
+                AND a.finish_time &gt;= #{finish_begin_time}
+            </if>
+            <if test="finish_end_time != null">
+                and a.finish_time &lt;= #{finish_end_time}
+            </if>
+            AND  a.enterprise_id = #{enterprise_id}
+            and  a.enterprise_id=e.id ORDER BY a.create_time DESC
+        </where>
+    </select>
+
+    <select id="miniFindAdv" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspAdv">
+        select a.id,a.location, a.a_order,a.title,a.href, a.img_url,a.create_time,e.manager_name name,a.status from shop_adv a,enterprise e
+        WHERE a.enterprise_id = #{enterprise_id} AND a.`status`=1 GROUP BY a.id ORDER BY a_order
+    </select>
+
+    <update id="advIOrderAddOne" parameterType="java.lang.String">
+        update shop_adv set a_order=a_order+1
+        where enterprise_id=#{enterpriseId} and id!=#{id}
+    </update>
+
+    <update id="toBeNo1" parameterType="java.lang.String">
+        update shop_adv set a_order=1 where id=#{id}
+    </update>
+
+
+</mapper>

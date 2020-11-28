@@ -1,0 +1,9 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.StaffQuitMapper" >
+
+    <select id="getRecevierStaffId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT
+       receiver_staff_id
+     FROM staff_quit WHERE quit_staff_id=#{staffId} ORDER BY staff_quit.create_time desc LIMIT 1
+    </select>
+</mapper>

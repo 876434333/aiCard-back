@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.OrderMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.Order" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="order_nbr" property="orderNbr" jdbcType="VARCHAR" />
+    <result column="offer_img" property="offerImg" jdbcType="VARCHAR" />
+    <result column="link_phone" property="linkPhone" jdbcType="VARCHAR" />
+    <result column="link_man" property="linkMan" jdbcType="VARCHAR" />
+    <result column="offer_id" property="offerId" jdbcType="VARCHAR" />
+    <result column="offer_num" property="offerNum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="total_price" property="totalPrice" jdbcType="DECIMAL" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="VARCHAR" />
+    <result column="department_id" property="departmentId" jdbcType="VARCHAR" />
+    <result column="order_price" property="orderPrice" jdbcType="DECIMAL" />
+    <result column="express_fee" property="expressFee" jdbcType="DECIMAL" />
+    <result column="total_price_discount" property="totalPriceDiscount" jdbcType="DECIMAL" />
+    <result column="is_express" property="isExpress" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP" />
+    <result column="extract_value" property="extractValue" jdbcType="DECIMAL" />
+    <result column="express_name" property="expressName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_nbr, offer_img, link_phone, link_man, offer_id, offer_num, create_time, 
+    status, total_price, user_id, staff_id, pay_time, enterprise_id, department_id, order_price, 
+    express_fee, total_price_discount, is_express, address, finish_time, extract_value, 
+    express_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from shop_order
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from shop_order
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.Order" >
+    insert into shop_order (id, order_nbr, offer_img,
+      link_phone, link_man, offer_id, 
+      offer_num, create_time, status, 
+      total_price, user_id, staff_id, 
+      pay_time, enterprise_id, department_id, 
+      order_price, express_fee, total_price_discount, 
+      is_express, address, finish_time, 
+      extract_value, express_name)
+    values (#{id,jdbcType=VARCHAR}, #{orderNbr,jdbcType=VARCHAR}, #{offerImg,jdbcType=VARCHAR}, 
+      #{linkPhone,jdbcType=VARCHAR}, #{linkMan,jdbcType=VARCHAR}, #{offerId,jdbcType=VARCHAR}, 
+      #{offerNum,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{totalPrice,jdbcType=DECIMAL}, #{userId,jdbcType=VARCHAR}, #{staffId,jdbcType=VARCHAR}, 
+      #{payTime,jdbcType=TIMESTAMP}, #{enterpriseId,jdbcType=VARCHAR}, #{departmentId,jdbcType=VARCHAR}, 
+      #{orderPrice,jdbcType=DECIMAL}, #{expressFee,jdbcType=DECIMAL}, #{totalPriceDiscount,jdbcType=DECIMAL}, 
+      #{isExpress,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{finishTime,jdbcType=TIMESTAMP}, 
+      #{extractValue,jdbcType=DECIMAL}, #{expressName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.Order" >
+    insert into shop_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNbr != null" >
+        order_nbr,
+      </if>
+      <if test="offerImg != null" >
+        offer_img,
+      </if>
+      <if test="linkPhone != null" >
+        link_phone,
+      </if>
+      <if test="linkMan != null" >
+        link_man,
+      </if>
+      <if test="offerId != null" >
+        offer_id,
+      </if>
+      <if test="offerNum != null" >
+        offer_num,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="totalPrice != null" >
+        total_price,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="staffId != null" >
+        staff_id,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="departmentId != null" >
+        department_id,
+      </if>
+      <if test="orderPrice != null" >
+        order_price,
+      </if>
+      <if test="expressFee != null" >
+        express_fee,
+      </if>
+      <if test="totalPriceDiscount != null" >
+        total_price_discount,
+      </if>
+      <if test="isExpress != null" >
+        is_express,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="finishTime != null" >
+        finish_time,
+      </if>
+      <if test="extractValue != null" >
+        extract_value,
+      </if>
+      <if test="expressName != null" >
+        express_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNbr != null" >
+        #{orderNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="offerImg != null" >
+        #{offerImg,jdbcType=VARCHAR},
+      </if>
+      <if test="linkPhone != null" >
+        #{linkPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="linkMan != null" >
+        #{linkMan,jdbcType=VARCHAR},
+      </if>
+      <if test="offerId != null" >
+        #{offerId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerNum != null" >
+        #{offerNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="totalPrice != null" >
+        #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="staffId != null" >
+        #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentId != null" >
+        #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderPrice != null" >
+        #{orderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="expressFee != null" >
+        #{expressFee,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPriceDiscount != null" >
+        #{totalPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="isExpress != null" >
+        #{isExpress,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="finishTime != null" >
+        #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="extractValue != null" >
+        #{extractValue,jdbcType=DECIMAL},
+      </if>
+      <if test="expressName != null" >
+        #{expressName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.Order" >
+    update shop_order
+    <set >
+      <if test="orderNbr != null" >
+        order_nbr = #{orderNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="offerImg != null" >
+        offer_img = #{offerImg,jdbcType=VARCHAR},
+      </if>
+      <if test="linkPhone != null" >
+        link_phone = #{linkPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="linkMan != null" >
+        link_man = #{linkMan,jdbcType=VARCHAR},
+      </if>
+      <if test="offerId != null" >
+        offer_id = #{offerId,jdbcType=VARCHAR},
+      </if>
+      <if test="offerNum != null" >
+        offer_num = #{offerNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="totalPrice != null" >
+        total_price = #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="staffId != null" >
+        staff_id = #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentId != null" >
+        department_id = #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderPrice != null" >
+        order_price = #{orderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="expressFee != null" >
+        express_fee = #{expressFee,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPriceDiscount != null" >
+        total_price_discount = #{totalPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="isExpress != null" >
+        is_express = #{isExpress,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="finishTime != null" >
+        finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="extractValue != null" >
+        extract_value = #{extractValue,jdbcType=DECIMAL},
+      </if>
+      <if test="expressName != null" >
+        express_name = #{expressName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.Order" >
+    update shop_order
+    set order_nbr = #{orderNbr,jdbcType=VARCHAR},
+      offer_img = #{offerImg,jdbcType=VARCHAR},
+      link_phone = #{linkPhone,jdbcType=VARCHAR},
+      link_man = #{linkMan,jdbcType=VARCHAR},
+      offer_id = #{offerId,jdbcType=VARCHAR},
+      offer_num = #{offerNum,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      total_price = #{totalPrice,jdbcType=DECIMAL},
+      user_id = #{userId,jdbcType=VARCHAR},
+      staff_id = #{staffId,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=VARCHAR},
+      order_price = #{orderPrice,jdbcType=DECIMAL},
+      express_fee = #{expressFee,jdbcType=DECIMAL},
+      total_price_discount = #{totalPriceDiscount,jdbcType=DECIMAL},
+      is_express = #{isExpress,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      extract_value = #{extractValue,jdbcType=DECIMAL},
+      express_name = #{expressName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

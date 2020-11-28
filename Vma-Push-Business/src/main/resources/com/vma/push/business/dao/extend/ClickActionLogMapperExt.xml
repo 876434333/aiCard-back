@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.ClickActionLogMapper" >
+    <select id="queryActionNum" resultType="java.lang.Long" parameterType="java.lang.String">
+        SELECT count(1) num FROM click_action_log WHERE date_format(create_time,'%Y-%m-%d') = curdate()
+        AND enterprise_id = #{enterpriseId} AND action_code = #{actionCode} and employee_id=#{staffId}
+    </select>
+
+    <select id="queryActionNumAll" resultType="java.lang.Long" parameterType="java.lang.String">
+        SELECT count(1) num FROM click_action_log WHERE date_format(create_time,'%Y-%m-%d') = curdate()
+        AND enterprise_id = #{enterpriseId} AND action_code = #{actionCode}
+    </select>
+
+    <select id="queryActionNumByUser" resultType="java.lang.Long" parameterType="java.lang.String">
+        SELECT count(1) num FROM click_action_log WHERE
+         employee_id = #{staffId} AND action_code = #{actionCode} AND user_id = #{userId}
+    </select>
+    
+    <select id="findNum" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT count(1) num FROM click_action_log WHERE
+            enterprise_id = #{enterpriseId} AND action_code = #{actionCode} AND offer_id=#{offerId}
+    </select>
+    
+    <select id="getActionListByUser" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspActionLog">
+          SELECT
+            a.action_code,a.user_id,ifnull(NULLIF(usr.name,''),u.nick_name) name,a.description,a.create_time,a.num,u.head_icon
+        FROM
+            click_action_log a LEFT JOIN staff b on a.employee_id = b.id
+            LEFT JOIN user_info u on a.user_id = u.id
+            LEFT JOIN user_staff_rela usr ON u.id = usr.user_id and usr.staff_id=b.id
+        WHERE a.employee_id=#{staffId} AND a.num>0
+          AND a.action_code!='1000'
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="queryUserActionLog" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.actionLog.UserActionLog">
+        SELECT
+          u.head_icon,
+          u.name,
+          u.nick_name,
+          log.description,
+          log.action_code,
+          log.num,
+          log.create_time
+        FROM click_action_log log, user_info u
+        WHERE log.employee_id = #{staff_id}
+        <if test="user_id != null and user_id != ''">
+            AND log.user_id = #{user_id}
+        </if>
+              AND u.id = log.user_id AND log.enterprise_id = #{enterprise_id}
+        ORDER BY log.create_time DESC
+    </select>
+
+    <select id="queryFollowLog" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.actionLog.UserActionLog">
+        SELECT
+        u.head_icon,
+        u.name,
+        u.nick_name,
+        log.description,
+        log.action_code,
+        log.num,
+        log.create_time
+        FROM click_action_log log, user_info u
+        WHERE log.employee_id = #{staff_id}
+        <if test="user_id != null and user_id != ''">
+            AND log.user_id = #{user_id}
+        </if>
+        AND log.action_code='1000'
+        AND u.id = log.user_id AND log.enterprise_id = #{enterprise_id}
+        ORDER BY log.create_time DESC
+    </select>
+    <!--统计相关动作的数据 -->
+    <select id="countActionByUser" parameterType="com.vma.push.business.dto.req.userInfo.ReqCountAction" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem">
+
+        <if test="departmentId != null and departmentId != ''">
+            call pro_test_partlist(#{departmentId},#{enterpriseId});
+        </if>
+        SELECT count(1) 'value'
+        FROM click_action_log log
+        WHERE 1=1
+        <if test="userId != null and userId != ''">
+            AND log.user_id = #{userId}
+        </if>
+        <if test="staffId != null and staffId != ''">
+            AND log.employee_id = #{staffId}
+        </if>
+        <if test="departmentId != null and departmentId != ''">
+            AND log.department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+        </if>
+        AND log.enterprise_id = #{enterpriseId}
+        AND log.action_code IN
+        <foreach collection="codes" item="code" index="index"
+                 open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+
+    <select id="countUserActionByDay" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem">
+        SELECT date_format(datelist, '%m-%d') name, ifnull(num, 0) 'value' FROM calendar
+        LEFT JOIN (
+          select create_time,sum(num) num from (
+            SELECT  date_format(t.create_time, '%m-%d') create_time,count(1) num
+            FROM click_action_log t WHERE action_code in(1001,1002,1004,1010)
+            <if test="staffId != null and staffId != ''">
+                AND t.employee_id = #{staffId}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND t.user_id = #{userId}
+            </if>
+            <if test="enterpriseId != null and enterpriseId != '' ">
+                AND t.enterprise_id = #{enterpriseId}
+            </if>
+            GROUP BY date_format(create_time, '%Y-%m-%d')
+           <!-- UNION
+            SELECT  date_format(create_time, '%m-%d') create_time,count(1) num
+            FROM user_staff_rela
+            WHERE  department_id IN (select id from child_dept_enter where department_id='1')
+            <if test="enterpriseId != null and enterpriseId != '' ">
+                AND enterprise_id = #{enterpriseId}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                AND staff_id = #{staffId}
+            </if>
+          GROUP BY date_format(create_time, '%Y-%m-%d')-->) tt GROUP BY tt.create_time desc
+        ) t ON date_format(datelist, '%m-%d') = create_time
+        WHERE date_sub(curdate(), INTERVAL 15 DAY) <![CDATA[<=]]> date(datelist) AND datelist <![CDATA[ < ]]> curdate()
+        ORDER BY datelist ASC
+    </select>
+
+    <select id="actionDataByStaff" parameterType="com.vma.push.business.dto.req.ReqActionData" resultType="com.vma.push.business.dto.rsp.userInfo.RspActionData">
+    select a.code action_code,a.description,ifnull(b.count,0) count from click_action a left join (
+        select action_code,sum(count) count,description from(
+        (select a.action_code,sum(a.num) count,b.description  from bi_action_log a left join click_action b
+        on a.action_code=b.code
+        where a.staff_id=#{staff_id}
+        and a.action_code in (1015,1021,1008,1004,1001,1011,1010,1002,1006,1005,1007)
+        <if test="end_time==null and begin_time==null">
+            and datediff(now(),a.create_time)<![CDATA[<]]>7
+        </if>
+        <if test="begin_time!=null">
+            and a.create_time<![CDATA[>=]]>#{begin_time}
+        </if>
+        <if test="end_time!=null">
+            and a.create_time<![CDATA[<=]]>#{end_time}
+        </if>
+        group by a.action_code)
+        union
+        (
+        select a.action_code,count(1) count,b.description from click_action_log a LEFT  join click_action b
+        on a.action_code=b.code
+        where a.employee_id=#{staff_id}
+        and a.action_code in (1015,1021,1008,1004,1001,1011,1010,1002,1006,1005,1007)
+        <!--and date_format(now(),'%y-%m-%d')=date_format(a.create_time,'%y-%m-%d')-->
+        <!--<if test="end_time==null and begin_time!=null">-->
+            <!--and date_format(#{begin_time},'%y-%m-%d')=date_format(a.create_time,'%y-%m-%d')-->
+        <!--</if>-->
+        <!--<if test="end_time!=null and begin_time==null">-->
+            <!--and date_format(#{end_time},'%y-%m-%d')=date_format(a.create_time,'%y-%m-%d')-->
+        <!--</if>-->
+        /*默认查询7天 M--lql 20180920000007*/
+        <if test="end_time==null and begin_time==null">
+            and datediff(now(),a.create_time)<![CDATA[<]]>7
+        </if>
+        <if test="begin_time!=null">
+            and a.create_time<![CDATA[>=]]>#{begin_time}
+        </if>
+        <if test="end_time!=null">
+            and a.create_time<![CDATA[<=]]>#{end_time}
+        </if>
+        group by a.action_code
+        )) t group by t.action_code,t.description
+    ) b on a.code=b.action_code where a.code in (1015,1021,1008,1004,1001,1011,1010,1002,1006,1005,1007)
+    </select>
+
+    <select id="cancelZan" parameterType="com.vma.push.business.dto.req.ReqActionData" resultType="java.lang.String">
+        select sum(count) count from(
+        (select sum(a.num) count from bi_action_log a
+        where a.staff_id=#{staff_id}
+        and a.action_code=1003
+        <if test="end_time==null and begin_time==null">
+            and datediff(now(),a.create_time)<![CDATA[<]]>7
+        </if>
+        <if test="begin_time!=null">
+            and a.create_time<![CDATA[>=]]>#{begin_time}
+        </if>
+        <if test="end_time!=null">
+            and a.create_time<![CDATA[<=]]>#{end_time}
+        </if>
+        )
+        union
+        (
+        select count(1) count from click_action_log a
+        where a.employee_id=#{staff_id}
+        and a.action_code=1003
+        and date_format(now(),'%y-%m-%d')=date_format(a.create_time,'%y-%m-%d')
+        <if test="end_time==null and begin_time!=null">
+            and date_format(#{begin_time},'%y-%m-%d')=date_format(a.create_time,'%y-%m-%d')
+        </if>
+        <if test="end_time!=null and begin_time==null">
+            and date_format(#{end_time},'%y-%m-%d')=date_format(a.create_time,'%y-%m-%d')
+        </if>
+
+        )) t;
+    </select>
+
+    <select id="actionDetail" parameterType="com.vma.push.business.dto.req.ReqActionCode" resultType="com.vma.push.business.dto.rsp.RspActionDetail">
+        select b.id,b.nick_name,b.head_icon,a.description,a.num,a.create_time from click_action_log a left join user_info b
+        ON a.user_id=b.id
+        where a.action_code in (1015,1021,1008,1004,1001,1011,1010,1002,1006,1005,1007)
+        <if test="end_time==null and begin_time==null">
+            and datediff(now(),a.create_time)<![CDATA[<]]>7
+        </if>
+        <if test="begin_time!=null">
+            and a.create_time<![CDATA[>=]]>#{begin_time}
+        </if>
+        <if test="end_time!=null">
+            and a.create_time<![CDATA[<=]]>#{end_time}
+        </if>
+        <if test="user_id!=null">
+            and a.user_id=#{user_id}
+        </if>
+        and a.employee_id=#{staff_id} and a.action_code=#{code}
+
+        ORDER BY a.create_time DESC
+    </select>
+    <select id="interactDataByStaff" parameterType="com.vma.push.business.dto.req.ReqInteract" resultType="com.vma.push.business.dto.rsp.RspInteract">
+         select a.user_id,b.nick_name,b.head_icon,count(1) count from click_action_log a,user_info b
+         where a.employee_id=#{staff_id}
+        and a.action_code in (1015,1021,1008,1004,1001,1011,1010,1002,1006,1005,1007)
+        <if test="end_time==null and begin_time==null">
+            and datediff(now(),a.create_time)<![CDATA[<]]>7
+        </if>
+        <if test="begin_time!=null">
+            and a.create_time<![CDATA[>=]]>#{begin_time}
+        </if>
+        <if test="end_time!=null">
+            and a.create_time<![CDATA[<=]]>#{end_time}
+        </if>
+         and a.user_id=b.id
+         group by a.user_id
+        ORDER BY MAX(a.create_time) DESC
+    </select>
+    <select id="reqInteractDetail" parameterType="com.vma.push.business.dto.req.ReqInteractDetail" resultType="com.vma.push.business.dto.rsp.RspInteractDetail">
+         select a.description,count(a.num) num,c.description action_name,a.action_code from click_action_log a,user_info b,click_action c
+         where a.employee_id=#{staff_id}
+          and a.action_code=c.`code`
+         and a.user_id=b.id and a.user_id=#{user_id}
+          and a.action_code in (1015,1021,1008,1004,1001,1011,1010,1002,1006,1005,1007)
+        <if test="end_time==null and begin_time==null">
+            and datediff(now(),a.create_time)<![CDATA[<]]>7
+        </if>
+        <if test="begin_time!=null">
+            and a.create_time<![CDATA[>=]]>#{begin_time}
+        </if>
+        <if test="end_time!=null">
+            and a.create_time<![CDATA[<=]]>#{end_time}
+        </if>
+         group by a.action_code
+    </select>
+
+    <update id="handoverData" parameterType="java.lang.String">
+        UPDATE click_action_log t SET t.employee_id = #{toId} WHERE t.employee_id = #{fromId};
+        UPDATE bi_action_log SET staff_id = #{toId} WHERE staff_id = #{fromId};
+        UPDATE bi_order_log SET staff_id = #{toId} WHERE staff_id = #{fromId};
+        UPDATE bi_user_log SET staff_id = #{toId} WHERE staff_id = #{fromId};
+        UPDATE bi_attach_user_log SET staff_id = #{toId} WHERE staff_id = #{fromId};
+        UPDATE bi_im_log SET staff_id = #{toId} WHERE staff_id = #{fromId};
+    </update>
+</mapper>

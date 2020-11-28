@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.LabelInfoMapper" >
+    <select id="queryUserLabelInfo" resultType="com.vma.push.business.dto.rsp.userInfo.RspUserLabelInfo" parameterType="java.lang.String">
+      SELECT
+        li.id label_id,
+        li.label_name,
+        if(uli.id, 1, 0) is_target
+      FROM label_info li LEFT JOIN user_label_info uli ON li.id = uli.label_id AND uli.user_id = #{userId}
+      WHERE li.type_id = #{typeId}
+    </select>
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.AdminMapper" >
+
+    <select id="findByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from admin
+        WHERE  login=#{phone}  and type=1 limit 1
+    </select>
+
+    <select id="findAllAccount" parameterType="com.vma.push.business.dto.req.ReqAccountSelect" resultType="com.vma.push.business.dto.rsp.RspAccount">
+        select
+        a.id,
+        a.name,
+        a.phone,
+        a.role,
+        a.create_time,
+        a.status,
+        (SELECT t.name FROM admin t WHERE a.create_id =  t.id) staff_name
+        from admin a
+        <where>
+            <if test="name != null">
+                and name LIKE '%${name}%'
+            </if>
+            <if test="phone != null">
+                and phone LIKE '%${phone}%'
+            </if>
+            <if test=" role != null">
+                and  role = #{role}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="adminId != null">
+            and create_id=#{adminId}
+            </if>
+        </where>
+               order by a.create_time DESC
+    </select>
+
+    <select id="findAllAgent" resultType="com.vma.push.business.dto.rsp.RspAgent">
+        SELECT DISTINCT agent FROM admin
+    </select>
+
+    <select id="selectByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+         FROM  admin WHERE  phone=#{phone}
+    </select>
+
+    <select id="selectLogin" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Admin">
+        SELECT id,phone,login,pass_word passWord,status,role,name,agent,type,custom_id customId,remark,head_icon headIcon
+
+         from admin where login=#{phone} and `type`=5
+    </select>
+
+    <select id="validateUser" parameterType="com.vma.push.business.dto.req.ReqSystemLogin" resultType="com.vma.push.business.entity.Admin">
+        select *
+        FROM  admin
+        WHERE login=#{login} and t1.password = #{passWord}
+    </select>
+
+    <select id="find" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        *
+        FROM  admin WHERE  login=#{login} AND type=#{type} limit 1
+    </select>
+
+    <select id="findPage" parameterType="com.vma.push.business.dto.req.superback.ReqAdminPage" resultType="com.vma.push.business.dto.rsp.superback.RspAdmin">
+        select
+          id,login,name,remark,status,create_time,login_time,pass_word,role
+        FROM  admin
+        WHERE 1=1
+        <if test="login_name != null">
+           AND (name LIKE '%${login_name}%' or phone LIKE '%${login_name}%')
+        </if>
+        and custom_id = #{custom_id}
+    </select>
+    <select id="isExist" parameterType="com.vma.push.business.entity.Admin" resultType="java.lang.Integer">
+        select count(*) from admin where login=#{login} and type=#{type}
+    </select>
+    <update id="updateLogin" parameterType="com.vma.push.business.entity.Admin">
+        update admin set login=#{login},phone=#{phone},`name`=#{name}
+        where id=#{id}
+    </update>
+    <select id="findWebInfo" parameterType="java.lang.Integer" resultType="com.vma.push.business.dto.rsp.userInfo.RspWebInfo">
+        select web_title,web_icon from web_config where login_type=#{type}
+    </select>
+    <insert id="setMenuRole" parameterType="com.vma.push.business.dto.req.ReqUserMenu" >
+        INSERT INTO user_menu_ref(id,menu_id,user_id,`status`)
+        select RAND() id ,id menu_id,#{user_id} user_id,1 `status`
+        from menu_resource where role=#{type}
+    </insert>
+
+    <update id="updatePassword" parameterType="com.vma.push.business.dto.req.superback.ReqUpdatePassword">
+        update admin set pass_word=#{password} WHERE custom_id=#{id}
+    </update>
+
+    <update id="updateStatus" parameterType="com.vma.push.business.entity.Admin">
+        update admin set status=#{status} WHERE custom_id=#{customId}
+    </update>
+
+    <select id="queryEnterAdmin" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM admin t WHERE t.custom_id = #{id} and role = 1 limit 1
+    </select>
+    <select id="getEnterpriseListByPhone" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.ai.CompanyList">
+       SELECT
+	     enterprise.id enterpriseId,
+	     enterprise.NAME NAME,
+	     enterprise.head_icon logo
+       FROM
+	     admin
+       INNER JOIN enterprise ON admin.custom_id = enterprise.id and enterprise.STATUS = 1
+       WHERE
+	    admin.phone = #{phone}
+    </select>
+    <select id="selectAdminListByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM  admin WHERE  phone=#{phone}
+    </select>
+</mapper>

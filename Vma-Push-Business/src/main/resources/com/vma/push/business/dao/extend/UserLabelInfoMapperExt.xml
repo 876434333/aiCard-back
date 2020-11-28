@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserLabelInfoMapper" >
+  <delete id="delete" parameterType="java.lang.String">
+     DELETE FROM user_label_info  WHERE user_id = #{userId} AND staff_id = #{staffId} AND label_id = #{labelId}
+  </delete>
+</mapper>

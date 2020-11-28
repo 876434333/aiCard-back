@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.OfferSpecMapper">
+    <resultMap id="BaseRestType" type="com.vma.push.business.dto.rsp.RepAllProduct">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="offer_name" property="offerName" jdbcType="VARCHAR"/>
+        <result column="offer_price" property="offerPrice" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="BaseResult" type="com.vma.push.business.entity.OfferImg">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="offer_spec_id" property="offerSpecId" jdbcType="VARCHAR"/>
+        <result column="img_url" property="imgUrl" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="selectProductById" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RepSpecAndImg">
+        select id , offer_name , offer_price ,status
+        from shop_offer_spec
+        where  id=#{id,jdbcType=VARCHAR};
+    </select>
+    <select id="selectImg" parameterType="String" resultType="com.vma.push.business.dto.rsp.RspImage">
+        SELECT *
+        FROM shop_offer_img
+        WHERE offer_spec_id=#{id} order BY shop_order ASC
+    </select>
+
+    <select id="selectImgUrls" parameterType="String" resultType="String">
+        SELECT img_url , `type`
+        FROM shop_offer_img
+        WHERE offer_spec_id=#{id}
+    </select>
+    <insert id="addOfferSpec" parameterType="com.vma.push.business.dto.rsp.RepAllProduct">
+    INSERT INTO shop_offer_spec (id,offer_name,offer_price,create_time,code,create_staff_id) VALUES (#{id},#{offerName},#{offerPrice},#{ createSpecTime},#{code},#{staffId});
+</insert>
+    <insert id="addImg" parameterType="java.util.List">
+        INSERT INTO shop_offer_img (id,img_url,offer_spec_id,create_time,`type`) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.imgId},#{item.imgUrl},#{item.offerSpecId},#{item.createTime},#{item.type});
+        </foreach>
+    </insert>
+
+    <delete id="deleteImg" parameterType="String">
+        delete FROM shop_offer_img WHERE  offer_spec_id = #{id}
+    </delete>
+
+
+    <select id="findAllProduct" resultMap="BaseRestType">
+     select spec.id , spec.offer_name ,spec.offer_price ,spec.create_time,spec.status,staff.name
+     from shop_offer_spec spec,staff
+     where spec.create_staff_id=staff.id
+    </select>
+
+    <select id="findAllProductBySelect" parameterType="com.vma.push.business.dto.req.PageSelect"
+            resultType="com.vma.push.business.dto.rsp.RepAllProduct">
+        select spec.id , spec.offer_name ,spec.offer_price ,spec.create_time,spec.status from shop_offer_spec spec
+        <where>
+            <if test="offer_name != null ">
+                AND spec.offer_name LIKE CONCAT('%',#{offer_name},'%')
+            </if>
+
+            <if test="status != null ">
+                AND spec.status = #{status}
+            </if>
+            AND spec.enterprise_id = #{enterprise_id}
+        </where>
+        order by spec.create_time desc
+    </select>
+    <select id="enterpriseProduct" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.RspStaffProduct">
+        SELECT a.offer_name,a.id,shop_offer_norms.offer_price,a.create_time,a.discount,a.status
+        FROM shop_offer_spec a LEFT JOIN shop_offer_norms on a.id = shop_offer_norms.offer_id and shop_offer_norms.is_default=1
+        WHERE a.enterprise_id=#{enterpriseid} and a.status='1'
+        ORDER BY a.create_time desc
+
+    </select>
+
+    <select id="staffProduct" parameterType="java.lang.String"
+            resultType="java.lang.Integer">
+        SELECT count(1) FROM shop_offer_spec a
+        WHERE a.enterprise_id=#{enid} and a.status='1'
+    </select>
+    <select id="offerPage" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOfferInfo">
+        select a.id offer_id,a.offer_name,b.norms_pic,b.offer_price,
+        CASE when r.id is null then 0 when r.id is not null then 1 end  is_top
+        from shop_offer_spec a
+        left JOIN shop_offer_norms b on a.id=b.offer_id and a.type=b.norms_type
+        left join (
+        select * from shop_offer_recommend where staff_id=#{staffId}
+        ) r on a.id=r.offer_id
+        where a.enterprise_id=#{eneterpriseId} and b.is_default=1 and a.status in (1,2)
+        order by r.create_time desc ,a.create_time desc
+
+    </select>
+    <select id="offerList" parameterType="com.vma.push.business.dto.req.store.ReqOfferList" resultType="com.vma.push.business.dto.rsp.store.RspOfferList">
+        select a.id,a.offer_name,ifnull(a.offer_sale,0) offer_sale,a.create_time,a.onsale_time,
+        a.extract_type,a.extract_per,a.extract_value,a.type
+        from shop_offer_spec a
+        where a.enterprise_id=#{enterprise_id}
+        <if test="offer_name!=null">
+            and offer_name like '%${offer_name}%'
+        </if>
+        and status=#{type}
+        ORDER BY a.onsale_time DESC
+    </select>
+    <select id="offerDetail" parameterType="java.lang.String" resultType="com.vma.push.business.dto.req.store.ReqEditOffer">
+      select id,offer_name name,is_pay_online, status,
+        extract_type,extract_value,extract_per,type
+      from shop_offer_spec
+      where id=#{id};
+    </select>
+    <select id="normsDetail" parameterType="java.lang.String" resultType="com.vma.push.business.dto.req.store.RspOfferNorms">
+        select `name`,offer_leave num,is_default ,norms_type type,norms_pic url,offer_price price from shop_offer_norms
+         where offer_id=#{id};
+    </select>
+    <select id="imgDetail" parameterType="java.lang.String" resultType="com.vma.push.business.dto.req.store.RspOfferImg">
+      select img_url url,`order` sort,type from shop_offer_img
+      where offer_spec_id=#{id}
+      ORDER BY `order`
+    </select>
+    <delete id="delNorms" parameterType="com.vma.push.business.dto.req.store.RspDelNorms">
+        delete  from shop_offer_norms where offer_id=#{offer_id} and norms_type=#{type}
+    </delete>
+    <select id="normsInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspNormsInfo">
+    select norms_pic,offer_price,offer_leave from shop_offer_norms
+    where offer_id=#{id} and norms_type=0 and is_default=1 limit 1
+    </select>
+    <select id="normsInfo2" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspNormsInfo">
+        select is_default,norms_pic,offer_price,offer_leave from shop_offer_norms
+        where offer_id=#{id} and norms_type=1
+    </select>
+    <select id="offerInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOffInfo">
+
+    select a.id offer_id,a.offer_name,a.express_fee,b.offer_price,a.is_pay_online,a.voice_intro,a.status
+    from shop_offer_spec a
+    left join shop_offer_norms b on a.id=b.offer_id
+     where a.id=#{id}  and a.type=b.norms_type and b.is_default=1 limit 1
+
+    </select>
+    <select id="imgInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspOfferImg">
+     select img_url,type from shop_offer_img where  offer_spec_id=#{id} ORDER BY  `order`
+    </select>
+    <update id="changeStatus" parameterType="com.vma.push.business.dto.req.store.ReqChangStatus">
+      update shop_offer_spec set `status`=#{status} ,onsale_time=NOW() where id=#{id}
+    </update>
+    <select id="recList" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.store.RspRecOffer">
+        select os.id,os.offer_name,n.norms_pic,n.offer_price from shop_offer_recommend o
+          LEFT JOIN shop_offer_spec os on o.offer_id=os.id
+          left join shop_offer_norms n on os.id=n.offer_id and os.type=n.norms_type
+          where o.staff_id=#{staffId} and n.is_default=1
+    </select>
+
+    <select id="getcount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select ifnull(sum(num),0) from shop_cart where offer_id= #{offerid}
+        and norms_id=#{normid}
+        and user_id=#{userid}
+    </select>
+    <select id="staffOfferIntro" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.staff.RspStaffOfferIntro">
+        select c.*,case when d.id is null then 0 else 1 end istop,d.voice_intro,d.id intro_id from (
+            select a.id,a.offer_name,b.offer_price,a.create_time,b.norms_pic from shop_offer_spec a left join shop_offer_norms b
+            on a.id=b.offer_id and a.type=b.norms_type and b.is_default=1
+            where a.enterprise_id=#{enid} and (a.status=1 or a.status=2))
+        c left join (
+          select * from shop_offer_recommend where staff_id=#{staffid}
+           ) d on c.id=d.offer_id
+         where d.staff_id = #{staffid}
+         order by d.create_time desc
+    </select>
+
+</mapper>

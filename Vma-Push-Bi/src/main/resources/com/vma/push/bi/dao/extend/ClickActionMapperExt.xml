@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.ClickActionMapper" >
+  <select id="findAll" resultType="com.vma.push.bi.entity.ClickAction">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM click_action WHERE status = '1'
+  </select>
+  <insert id="moveClickData">
+    INSERT INTO `click_action_history` (`id`, `action_code`, `user_id`, `create_time`, `description`, `employee_id`, `enterprise_id`, `action_target`, `num`, `offer_id`, `department_id`)
+    select `id`, `action_code`, `user_id`, `create_time`, `description`, `employee_id`, `enterprise_id`, `action_target`, `num`, `offer_id`, `department_id`
+    FROM click_action_log;
+    delete from click_action_log;
+  </insert>
+</mapper>

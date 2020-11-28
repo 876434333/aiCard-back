@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.ClickActionLogMapper" >
+  <select id="count" resultType="java.lang.Long" parameterType="java.lang.String">
+    SELECT count(1)
+    FROM click_action_log t
+    WHERE date_format(create_time,'%Y-%m-%d') = #{date}
+    <if test="staffId != null and staffId != ''">
+      AND t.employee_id = #{staffId}
+    </if>
+    <if test="actionCode != null and actionCode != ''">
+      AND t.action_code = #{actionCode}
+    </if>
+    <if test="departmentId != null and departmentId != ''">
+      AND t.department_id = #{departmentId}
+    </if>
+    <if test="enterpriseId != null and enterpriseId !=''">
+      AND t.enterprise_id = #{enterpriseId}
+    </if>
+  </select>
+</mapper>

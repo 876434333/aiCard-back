@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.EnterpriseMapper">
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from enterprise
+    </select>
+
+    <select id="findAllEnterprise" parameterType="com.vma.push.business.dto.req.ReqEnterpriseSelect"
+            resultType="com.vma.push.business.dto.rsp.RspAllEnterprise">
+        select
+        e.id,
+        e.name,
+        e.sale_card_num,
+        e.create_time,
+        e.expire_time,
+        e.auth_soft,
+        e.manager_name,
+        e.manager_phone,
+        e.phone,
+        e.business_license_code,
+        e.expire_time,
+        admin.status,
+        e.address,
+        e.business_license_url,
+        e.auth_wei,
+        e.expire_time,
+        e.CorpID corp_id,
+        e.contactssecret contacts_secret,
+        e.bosssecret boss_secret,
+        e.aisecret ai_secret,
+        e.boss_AgentId boss_agent_id,
+        e.ai_AgentId ai_agent_id,
+        e.app_id app_id,
+        e.secret secret,
+        e.mch_id mch_id,
+        e.pay_key pay_key,
+        admin.name admin_name from enterprise e ,admin
+        <where>
+            <if test="name != null and name != ''">
+                AND e.name LIKE '%${name}%'
+            </if>
+            <if test="agent != null and agent != ''">
+                AND admin.agent = #{agent}
+            </if>
+            <if test="create_staff_id != null ">
+                AND e.create_staff_id = #{create_staff_id}
+            </if>
+            <if test="status != null ">
+                AND e.status = #{status}
+            </if>
+            <if test="begin_time != null">
+                AND e.expire_time &gt;= #{begin_time}
+            </if>
+            <if test="end_time != null">
+                and e.expire_time &lt;= #{end_time}
+            </if>
+            and e.create_staff_id = admin.id and role = 1
+        </where>
+        order by e.create_time desc
+    </select>
+
+    <select id="selectByManagerPhone" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Admin">
+        select * from admin WHERE login=#{manager_phone}
+    </select>
+
+    <select id="findAllAccount" parameterType="com.vma.push.business.dto.req.ReqAccountSelect"
+            resultType="com.vma.push.business.dto.rsp.RspAccount">
+        select
+        id,
+        manager_name,
+        phone,
+        role,
+        create_time,
+        status
+        from enterprise
+        <where>
+            <if test="manager_name != null">
+                and manager_name LIKE '%${manager_name}%'
+            </if>
+            <if test="phone != null">
+                and phone LIKE '%${phone}%'
+            </if>
+            <if test=" role != null">
+                and role = #{status}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCropID" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT CorpID FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+
+    <select id="getBosssecret" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT bosssecret FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+
+    <select id="findAisecret" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT aisecret FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+    <select id="getContactssecret" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT contactssecret FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+    <select id="findBoosAgentId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT boss_AgentId FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+
+    <select id="findAiAgentId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT ai_AgentId FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+
+    <select id="findAppId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT app_id FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+    <select id="findsecret" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT secret FROM  deploy WHERE  enterprise_id = #{id}
+    </select>
+
+    <select id="selectEnterpriseId" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.RspEnterpriseAllId">
+        select
+            CorpID corp_id,
+            contactssecret contacts_secret,
+            bosssecret boss_secret,
+            aisecret ai_secret,
+            boss_AgentId boss_agent_id,
+            ai_AgentId ai_agent_id,
+            app_id app_id,
+            secret secret,
+            mch_id mch_id,
+            pay_key pay_key,
+            message_template message_template,
+            pay_template pay_template
+        from deploy WHERE  enterprise_id =#{id}
+        LIMIT 1
+    </select>
+    <select id="AllSecret" parameterType="java.lang.String" resultType="com.vma.push.business.dto.req.AllSecret">
+         select
+            CorpID corp_id,
+            contactssecret contacts_secret,
+            bosssecret boss_secret,
+            aisecret ai_secret,
+            boss_AgentId boss_agent_id,
+            ai_AgentId ai_agent_id,
+            app_id app_id,
+            secret secret,
+            mch_id mch_id,
+            pay_key pay_key
+        from deploy WHERE enterprise_id=#{id}
+
+    </select>
+
+    <select id="findIm" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspIm">
+
+      select private_key privateKey,
+             public_key publicKey,
+             skd_app_id skdAppId,
+             manager_id managerId
+             FROM deploy WHERE  enterprise_id = #{enterprise_id}
+    </select>
+    <select id="findmsgtmp" parameterType="java.lang.String" resultType="java.lang.String">
+        select message_template from deploy WHERE enterprise_id=#{id}
+    </select>
+    <select id="findFirstAgentNumber" resultType="java.lang.Integer">
+      select count(1)
+             From enterprise WHERE parent_id="0" and role=4
+    </select>
+    <select id="findSecondAgentNumber" resultType="java.lang.Integer">
+        <if test="roleId == 3">
+            select count(1)
+            From enterprise WHERE parent_id =#{id} and role = 3
+        </if>
+        <if test="roleId == 4">
+            select count(1)
+            From enterprise WHERE parent_id in (SELECT id from enterprise where parent_id = #{id}) AND role = 3
+        </if>
+    </select>
+    <select id="findThirdAgentNumber" resultType="java.lang.Integer">
+        <if test="roleId==2">
+            select count(1) from enterprise WHERE parent_id =#{id} and role = 2
+        </if>
+        <if test="roleId==3">
+            SELECT
+            (
+            SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            AND role = 2
+            ) + (
+            SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            ) AND role = 2
+            )
+            FROM
+            DUAL
+        </if>
+        <if test="roleId==4">
+            SELECT
+            (
+            SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            )
+            ) AND role = 2
+            ) + (
+            SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+
+            ) AND role = 2
+            )
+            FROM
+            DUAL
+        </if>
+    </select>
+    <select id="findEnterpriseNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        <if test="roleId==1">
+            SELECT count(1) from enterprise WHERE parent_id =#{id}
+        </if>
+        <if test="roleId==2">
+            SELECT count(1) from enterprise WHERE parent_id in (select id from enterprise WHERE parent_id =#{id})
+        </if>
+        <if test="roleId==3">
+            SELECT
+            (SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            AND role = 2
+            )
+            ) + (
+            SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            )
+            )
+            )
+            FROM
+            DUAL;
+        </if>
+        <if test="roleId==4">
+            select (SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            )
+            AND role = 2
+            )
+            AND role = 1)+(
+
+            SELECT
+            count(1)
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id IN (
+            SELECT
+            id
+            FROM
+            enterprise
+            WHERE
+            parent_id = #{id}
+            )
+            )
+            )
+            ) from dual
+        </if>
+    </select>
+
+    <select id="findEnterpriseHistoryNumber" resultType="java.lang.Integer">
+        CALL pro_test_EnterPartList(#{id});
+        SELECT
+        count(1)
+        FROM
+        enterprise
+        WHERE
+        id IN (select id from child_dept_enter where enterprise_id=#{id})
+        AND role = 1
+        <if test='dayNumber !=null'>
+            AND TO_DAYS(NOW()) = TO_DAYS(create_time) +#{dayNumber}
+        </if>
+    </select>
+
+    <select id="applyList" parameterType="com.vma.push.business.dto.req.customer.ReqApplyPage"
+            resultType="com.vma.push.business.dto.rsp.customer.RspApplyList">
+        select
+        e.id,
+        e.name enterprise_name,
+        e.phone enterprise_phone,
+        e.is_deploy,t.template_name
+        from enterprise e ,shop_template t
+        <where>
+            <if test="enterprise_name !=null and enterprise_name!=''">
+                AND e.name LIKE '%${enterprise_name}%'
+            </if>
+
+            <if test="is_deploy !=null">
+                AND e.is_deploy=#{is_deploy}
+            </if>
+
+            <if test="template_time != null">
+                AND e.create_time<![CDATA[>=]]>#{template_time}
+            </if>
+
+            <if test="template_time_end !=null">
+                AND e.create_time<![CDATA[<=]]>#{template_time_end}
+            </if>
+            and e.template_id = t.code AND e.role=1 ORDER BY e.create_time DESC
+        </where>
+
+    </select>
+    <select id="enterList" parameterType="com.vma.push.business.dto.req.ReqEnterList"
+            resultType="com.vma.push.business.dto.rsp.RspEnterList">
+        select id,status,name,phone,IFNULL(money_leave,0) money_leave,parent_id from enterprise
+        where id IN (select id from child_dept_enter where enterprise_id=#{parent_id})and role=#{role}
+        <if test="status != null and status!=''">
+            and `status`=#{status}
+        </if>
+        <if test="status == null and status==''">
+            and `status`=1
+        </if>
+        <if test="name_or_phone != null">
+            and (name like '%${name_or_phone}%' or phone like '%${name_or_phone}%')
+        </if>
+        <if test="province_code != null and province_code!=''">
+            and province_code=#{province_code}
+        </if>
+        <if test="city_code != null and city_code!=''">
+            and city_code=#{city_code}
+        </if>
+        <if test="begin_time != null">
+            AND create_time <![CDATA[>=]]> #{begin_time}
+        </if>
+        <if test="end_time != null">
+            AND create_time <![CDATA[<=]]> #{end_time}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="enterDetailList" parameterType="com.vma.push.business.dto.req.ReqEnterList"
+            resultType="com.vma.push.business.dto.req.RspEnterDetailList">
+        select id,name,phone,
+        ifnull(money_leave,0) money_leave,ifnull(money_sum,0) money_sum,
+        head_icon,enterprise_no,create_time from enterprise
+        where id IN (select id from child_dept_enter where enterprise_id=#{parent_id}) and role=#{role}
+        and parent_id=#{parent_id}
+        <if test="status != null and status!=''">
+            and `status`=#{status}
+        </if>
+        <if test="status == null and status==''">
+            and `status`=1
+        </if>
+        <if test="name_or_phone != null">
+            and (name like '%${name_or_phone}%' or phone like '%${name_or_phone}%')
+        </if>
+        <if test="province_code != null">
+            and province_code=#{province_code}
+        </if>
+        <if test="city_code != null">
+            and city_code=#{city_code}
+        </if>
+        <if test="begin_time != null">
+            AND create_time <![CDATA[>=]]> #{begin_time}
+        </if>
+        <if test="end_time != null">
+            AND create_time <![CDATA[<=]]> #{end_time}
+        </if>
+    </select>
+
+    <select id="enterpriseList" parameterType="com.vma.push.business.dto.req.ReqEnterList"
+            resultType="com.vma.push.business.dto.rsp.superback.RspEnterpariseList">
+
+        select e.id,e.name,e.status,e.phone,s.template_name,e.is_deploy from enterprise e
+        left join shop_template s on e.template_id=s.code
+        where e.id IN (select id from child_dept_enter where enterprise_id=#{parent_id})
+        and e.role=#{role}
+        <if test="is_deploy != null">
+            and e.is_deploy=#{is_deploy}
+        </if>
+        <if test="status != null">
+            and e.`status`=#{status}
+        </if>
+        <if test="name_or_phone != null">
+            and (e.name like '%${name_or_phone}%' or e.phone like '%${name_or_phone}%')
+        </if>
+        <if test="province_code != null">
+            and e.province_code=#{province_code}
+        </if>
+        <if test="city_code != null">
+            and e.city_code=#{city_code}
+        </if>
+        <if test="begin_time != null">
+            AND e.create_time <![CDATA[>=]]> #{begin_time}
+        </if>
+        <if test="end_time != null">
+            AND e.create_time <![CDATA[<=]]> #{end_time}
+        </if>
+    </select>
+
+    <select id="oemInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspOemInfo">
+         select
+		a.id id2,
+        e.id,e.province_code,e.area_code,e.city_code,
+        e.head_icon,e.name,e.enterprise_no,a.login,
+        e.phone,e.address,e.create_time,s.name create_staff_name,
+        e.remark,ifnull(e.money_leave,0) money_leave,ifnull(e.money_sum,0) money_sum,ifnull(e.money_init,0) money_init,
+        e.`status`,e2.`name` parent_name
+        from enterprise e LEFT JOIN admin s on  e.create_staff_id=s.custom_id
+		left join admin a on e.id=a.custom_id
+        LEFT join enterprise e2 on e2.id=e.parent_id
+        WHERE e.id=#{id} and e.role='4' limit 1
+    </select>
+    <select id="areacount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT count(*) from enterprise where parent_id=#{id} and role='3'
+    </select>
+    <select id="agentcount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT count(*) from enterprise where parent_id=#{id} and role='2'
+    </select>
+    <select id="entercount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT count(*) from enterprise where parent_id=#{id} and role='1'
+    </select>
+
+    <select id="areaInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspAreaInfo">
+        select
+        a.id id2,
+        e.id,e.province_code,e.area_code,e.city_code,
+        e.head_icon,e.name,e.enterprise_no,a.login,
+        e.phone,e.address,e.create_time,s.name create_staff_name,
+        e.remark,ifnull(e.money_leave,0) money_leave,ifnull(e.money_sum,0) money_sum,ifnull(e.money_init,0) money_init,
+        e.`status`,e2.`name` parent_name
+        from enterprise e LEFT JOIN admin s on  e.create_staff_id=s.custom_id
+		left join admin a on e.id=a.custom_id
+        LEFT join enterprise e2 on e2.id=e.parent_id
+        WHERE e.id=#{id} and e.role='3' limit 1
+    </select>
+    <select id="agentInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspAgentInfo">
+        select
+        a.id id2,
+        e.id,e.province_code,e.area_code,e.city_code,e.parent_id,
+        e.head_icon,e.name,e.enterprise_no,a.login,
+        e.phone,e.address,e.create_time,s.name create_staff_name,
+        e.remark,ifnull(e.money_leave,0) money_leave,ifnull(e.money_sum,0) money_sum,ifnull(e.money_init,0) money_init,
+        e.`status`,e2.`name` parent_name
+        from enterprise e LEFT JOIN admin s on  e.create_staff_id=s.custom_id
+		left join admin a on e.id=a.custom_id
+        LEFT join enterprise e2 on e2.id=e.parent_id
+        WHERE e.id=#{id} and e.role='2' limit 1
+    </select>
+
+    <select id="enterInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspEnterInfo">
+        select
+         a.id id2,
+         e.expire_time,
+        e.id,e.is_deploy,e.template_id,e.province_code,e.area_code,e.city_code,
+        e.head_icon,e.name,e.enterprise_no,a.login,
+        e.phone,e.address,e.create_time,s.name create_staff_name,
+        e.remark,ifnull(e.money_leave,0) money_leave,ifnull(e.money_sum,0) money_sum,ifnull(e.money_init,0) money_init,
+        e.`status`,e2.`name` parent_name
+        from enterprise e LEFT JOIN admin s on  e.create_staff_id=s.custom_id
+		left join admin a on e.id=a.custom_id
+        LEFT join enterprise e2 on e2.id=e.parent_id
+        WHERE e.id=#{id} and e.role='1'  limit 1
+    </select>
+
+    <select id="getEntpById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from enterprise
+        WHERE id=#{id}
+    </select>
+    <select id="findTemplate" resultType="com.vma.push.business.dto.rsp.RspTemplate">
+        select CODE,template_name from shop_template where status='1'
+    </select>
+    <select id="provinceName" resultType="java.lang.String" parameterType="java.lang.String">
+      select province_name from province_info where province_code=#{pcode} limit 1
+    </select>
+    <select id="cityName" resultType="java.lang.String" parameterType="java.lang.String">
+    select city_name from city_info  where city_code=#{ccode}
+      and province_id=(select id from province_info where province_code=#{pcode} limit 1) limit 1
+    </select>
+    <select id="areaName" resultType="java.lang.String" parameterType="java.lang.String">
+    select area_name from area_info where area_code=#{acode}
+        and city_id in (
+            select id from city_info  where city_code=#{ccode}
+            and province_id in (select id from province_info where province_code=#{pcode})
+        ) limit 1
+    </select>
+
+    <select id="pointDetail" resultType="com.vma.push.business.dto.rsp.RspPointDetail" parameterType="java.lang.String">
+        select money_init,money_sum,money_leave from enterprise where id=#{id}
+    </select>
+    <select id="proChildEnterpriseId" parameterType="java.lang.String">
+        CALL pro_test_EnterPartList(#{enid});
+    </select>
+    <select id="proChildDepartmentId" parameterType="java.lang.String">
+        call pro_test_partlist(#{deptid},#{enid});
+    </select>
+    <select id="getenterByAppid" parameterType="java.lang.String" resultType="java.lang.String">
+        select enterprise_id from deploy where app_id=#{appid} limit 1
+    </select>
+    <!-- M by PLH at 2018-10-27 for 支持平台或是获取客服员工 -->
+    <select id="getEnterpriseCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from deploy where app_id=#{appid}
+    </select>
+    <select id="findChildids" parameterType="java.lang.String" resultType="java.lang.String">
+        select id from enterprise where parent_id=#{enid}
+    </select>
+    <insert id="addRela" parameterType="java.lang.String">
+        insert into child_dept_enter_copy(id,enterprise_id) VALUE(#{id},#{enid})
+    </insert>
+    <select id="findDeptChildids" parameterType="java.lang.String" resultType="java.lang.String">
+       select id from department where enterprise_id=#{enid} and parent_id=#{dept}
+    </select>
+    <insert id="addDeptRela" parameterType="java.lang.String">
+        insert into child_dept_enter_copy(id,department_id,enterprise_id) VALUE(#{id},#{dept},#{enid})
+    </insert>
+    <select id="checkkey" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from deploy where app_id=#{appid} and secret=#{secret} and enterprise_id=#{enid}
+    </select>
+    <select id="apiUrlByAppid" parameterType="java.lang.String" resultType="java.lang.String">
+        select api_url from enter_api_rela
+        where app_id=#{appid} ORDER BY create_time DESC limit 1
+
+    </select>
+    <select id="findDiscount" parameterType="java.lang.String" resultType="java.math.BigDecimal">
+        select discount from staff where discount_type='0'
+        and enterprise_id=#{enterprise_id}
+        limit 1
+    </select>
+
+    <select id="findEnterpriseName" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT name from enterprise WHERE id=#{enterprise_id}
+    </select>
+    <update id="uodateDepartName" parameterType="java.lang.String">
+        update department set `name`=#{name} where enterprise_id=#{id} and id=1
+    </update>
+    <select id="cardAndAcount" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.staff.RspIndex">
+        select  create_time begin_date,expire_time end_date,datediff(now(),create_time) used_days,
+        DATEDIFF(expire_time,now()) leave_days,money_sum card_num
+        from enterprise where id=#{enterpriseId} limit 1
+    </select>
+    <select id="findCusNum" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(user_id) from user_staff_rela where enterprise_id=#{enterpriseId}
+    </select>
+    <select id="findStaffNun" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(1) from staff where enterprise_id=#{enterpriseId} and status=1;
+    </select>
+    <select id="findCardUsedNum" resultType="java.lang.Integer" parameterType="java.lang.String">
+    select count(1) from staff where enterprise_id=#{enterpriseId} and status=1 and (open_ai=1 or open_boss=1)
+    </select>
+    <select id="apiImgUrlByAppid" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.RspApiAndImgUrl">
+        select api_url,img_url from enter_api_rela
+        where app_id=#{appid} ORDER BY create_time DESC limit 1
+    </select>
+    <select id="parentEnter" parameterType="java.lang.String" resultType="com.vma.push.business.dto.req.RepParentEnter">
+        select id,role from enterprise where id=(select parent_id from enterprise where id=#{id});
+    </select>
+    <select id="oemInfos" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspMiniOem">
+        select name oem_name,head_icon oem_icon from enterprise where id=#{id};
+    </select>
+    <select id="getEnterpriseListByOpenid" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.mini.RspEnterpriseList">
+        select enterprise.id, enterprise.name,enterprise.money_init,enterprise.sale_card_num,enterprise.head_icon,staff.role
+         from enterprise
+         INNER JOIN staff on staff.enterprise_id = enterprise.id and enterprise.status = 1
+         where staff.open_id = #{openid} and staff.status = 1
+    </select>
+
+    <select id="getSameCompanyNameList" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.mini.ResGetSameCompanyNameList">
+        SELECT id,name,manager_name managerName,sale_card_num saleCardNum from enterprise WHERE name = #{name} AND `status` = 1 AND parent_id="00000000-0000-0000-0000-000000000000"
+    </select>
+    <select id="selectEnterprisetListByOpenId" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Enterprise">
+        select
+        <include refid="Base_Column_List" />
+        from enterprise where id in (
+        select enterprise_id from staff where open_id = #{openId,jdbcType=VARCHAR}
+        )
+    </select>
+    <select id="selectEnterprisetListByWxId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from enterprise where id in (
+        select enterprise_id from staff where wx_id = #{wxId,jdbcType=VARCHAR} and staff.status = 1
+        ) and enterprise.status = 1
+    </select>
+    <update id="updateEnterpriseStaffNum">
+        update enterprise set sale_card_num = sale_card_num + #{num} where id = #{enterpriseId}
+    </update>
+</mapper>

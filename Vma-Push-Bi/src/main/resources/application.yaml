@@ -1,0 +1,46 @@
+server:
+  port: 10001
+  context-path: /push
+logging:
+  #config: classpath:logback-spring.xml
+  path: ./logs/eam-business
+  file: ./logs/eam-business/eam-business-logback.log
+  level:
+      root: INFO
+
+spring:
+  application:
+    name: vma-push-business
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+#      url: jdbc:mysql://118.25.194.90:3306/deecard_dev?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+#      username: liql
+#      password: deecard_dev
+
+      url: jdbc:mysql://118.25.107.71:3318/deecarddb?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+      username: deecard
+      password: deecard@2018!123
+
+      driver-class-name: com.mysql.jdbc.Driver
+      initialSize: 1
+      minIdle: 1
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 50
+      filters: stat
+      connectionProperties: druid.stat.mergeSql=false;druid.stat.slowSqlMillis=3000
+mybatis:
+  typeAliasesPackage: com.vma.push.bi.entity
+  mapperLocations: classpath:com/vma/push/bi/dao/**/*.xml
+
+
+
+
+

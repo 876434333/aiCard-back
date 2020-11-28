@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.ShopTemplateMapper" >
+
+
+    <select id="findTemplateSerlect" parameterType="com.vma.push.business.dto.req.template.ReqTemplateSelect" resultType="com.vma.push.business.dto.rsp.template.RspTemplatePage">
+        SELECT
+            id,
+            `code`,
+            enterprise_num,
+            small_cost,
+            card_cost,
+            template_name,
+            create_time,
+            modify_time,
+            status
+            FROM shop_template
+            <where>
+                <if test="template_name !=null and template_name !=''">
+                    AND template_name LIKE '%${template_name}%'
+                </if>
+
+            </where>
+    </select>
+
+
+    <select id="findTemplateById" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.template.RspTemplatePage">
+        SELECT
+            id,
+            `code`,
+            enterprise_num,
+            small_cost,
+            card_cost,
+            template_name,
+            create_time,
+            modify_time,
+            status
+            FROM shop_template WHERE id = #{id}
+    </select>
+
+
+    <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from shop_template
+        where code = #{id,jdbcType=VARCHAR}
+    </select>
+</mapper>

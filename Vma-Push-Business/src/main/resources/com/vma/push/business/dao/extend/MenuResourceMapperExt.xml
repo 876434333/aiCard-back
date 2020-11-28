@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.MenuResourceMapper" >
+
+    <select id="getMenuByUserId" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.superback.RspAdminMenu">
+        select menu.id,menu.name,menu.url,menu.parent_id,menu.rank,menu.is_leaf,target
+        FROM  menu_resource menu
+        left join user_menu_ref ref on menu.id = ref.menu_id
+        WHERE  ref.user_id=#{userId} AND menu.parent_id = '0' and ref.status=1
+        ORDER BY menu.seq
+    </select>
+    <select id="getMenuChildByUserId" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.superback.RspAdminMenu">
+        select menu.id,menu.name,menu.url,menu.parent_id,menu.rank,menu.is_leaf,target
+        FROM  menu_resource menu
+        left join user_menu_ref ref on menu.id = ref.menu_id
+        WHERE  ref.user_id=#{userId}  AND menu.parent_id = #{menuId} and ref.status=1
+        ORDER BY menu.seq
+    </select>
+    <select id="userMenuRole" parameterType="com.vma.push.business.dto.req.ReqUserMeunRole" resultType="com.vma.push.business.dto.rsp.RspUserMenuRole">
+
+      select id menu_id,name from menu_resource where role=#{role} and parent_id=#{parent_id}
+    </select>
+    <select id="isRole" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select STATUS from user_menu_ref where user_id=#{userid} and menu_id=#{menuid} LIMIT 1
+    </select>
+    <update id="editUserMenuRole" parameterType="com.vma.push.business.dto.req.ReqEditMenuRole">
+        UPDATE user_menu_ref SET
+        `status`=#{role}
+        WHERE `menu_id`=#{menuid} AND `user_id`=#{userid}
+    </update>
+    <select id="isSeted" parameterType="com.vma.push.business.dto.req.ReqEditMenuRole" resultType="java.lang.Integer">
+        select count(1) from user_menu_ref WHERE `menu_id`=#{menuid} AND `user_id`=#{userid}
+    </select>
+    <insert id="addUserMenuRole" parameterType="com.vma.push.business.dto.req.ReqEditMenuRole">
+        INSERT INTO `user_menu_ref` (`id`, `menu_id`, `user_id`, `status`)
+        VALUES (rand(), #{menuid}, #{userid}, #{role});
+    </insert>
+</mapper>

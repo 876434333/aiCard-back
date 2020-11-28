@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.CircleZanLogMapper" >
+
+    <select id="isZan"  resultMap="BaseResultMap" parameterType="com.vma.push.business.entity.CircleZanLog"  >
+        select *
+        from circle_zan_log
+        where circle_id = #{circleId} and user_id=#{userId} and flag=#{flag}
+    </select>
+
+    <select id="isZanmini" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*)
+        from circle_zan_log
+        where circle_id = #{circleId} and user_id=#{userId} and flag=2 and status=1
+    </select>
+    <select id="isZansale" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*)
+        from circle_zan_log
+        where circle_id = #{circleId} and user_id=#{userId} and status=1
+    </select>
+    <resultMap id="ZanInfo" type="com.vma.push.business.dto.rsp.RspZanInfo" >
+        <result column="name" property="user_name" jdbcType="VARCHAR" />
+        <result column="user_id" property="user_id" jdbcType="VARCHAR" />
+        <result column="modify_time" property="modify_time" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <select id="getZanInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspZanInfo">
+        SELECT
+            a.user_id,a.modify_time,a .flag,
+            case
+            a .flag
+            when 0 THEN b.`name`
+            when 1 THEN d.`name`
+            when 2 THEN c.`nick_name`
+            ELSE d.`name`
+            END as user_name
+        FROM
+            circle_zan_log a
+            LEFT JOIN staff b on a.user_id=b.id
+            LEFT JOIN user_info c on a.user_id=c.id
+            LEFT JOIN enterprise d on a.user_id=d.id
+        where a.circle_id=#{id} and a.`status`=1
+        ORDER BY a.modify_time
+    </select>
+
+    <delete id="deleteZanByCircleId" parameterType="java.lang.String">
+       DELETE from circle_zan_log where circle_id=#{id}
+    </delete>
+
+    <update id="addZan" parameterType="java.lang.String">
+        update circle_company set zan_num=zan_num+'1'
+        where id=#{id}
+    </update>
+
+    <update id="delZan" parameterType="java.lang.String">
+        update circle_company set zan_num=zan_num-'1'
+        where id=#{id}
+    </update>
+</mapper>

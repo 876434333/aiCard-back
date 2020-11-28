@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.StaffMapper">
+    <resultMap id="BaseResultMap" type="com.vma.push.business.entity.Staff">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="wx_id" property="wxId" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <result column="create_staff_id" property="createStaffId" jdbcType="VARCHAR"/>
+        <result column="pass_word" property="passWord" jdbcType="VARCHAR"/>
+        <result column="department_id" property="departmentId" jdbcType="VARCHAR"/>
+        <result column="station" property="station" jdbcType="VARCHAR"/>
+        <result column="head_icon" property="headIcon" jdbcType="VARCHAR"/>
+        <result column="open_ai" property="openAi" jdbcType="INTEGER"/>
+        <result column="open_boss" property="openBoss" jdbcType="INTEGER"/>
+        <result column="enterprise_id" property="enterpriseId" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="mail" property="mail" jdbcType="VARCHAR"/>
+        <result column="weixin" property="weixin" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="VARCHAR"/>
+        <result column="soft_img_url" property="softImgUrl" jdbcType="VARCHAR"/>
+        <result column="signature" property="signature" jdbcType="VARCHAR"/>
+        <result column="vidio_id" property="vidioId" jdbcType="VARCHAR"/>
+        <result column="audio_id" property="audioId" jdbcType="VARCHAR"/>
+        <!--<result column="signature_vedio" property="signatureVedio" jdbcType="VARCHAR" />-->
+        <result column="discount" property="discount" jdbcType="DECIMAL"/>
+        <result column="temlate_id" property="temlateId" jdbcType="INTEGER"/>
+        <result column="discount_type" property="discountType" jdbcType="INTEGER"/>
+        <result column="open_id" property="openid" jdbcType="VARCHAR"/>
+        <result column="audit_staff_id" property="auditStaffId" jdbcType="VARCHAR"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, wx_id, name, phone, create_time, status, modify_time, create_staff_id, pass_word, 
+    department_id, station, head_icon, open_ai, open_boss, enterprise_id, mobile, mail, 
+    weixin, address, role, soft_img_url, signature, vidio_id,audio_id, discount, temlate_id,
+    discount_type,open_id
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from staff
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from staff
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.vma.push.business.entity.Staff">
+    insert into staff (id, wx_id, name, 
+      phone, create_time, status, 
+      modify_time, create_staff_id, pass_word, 
+      department_id, station, head_icon, 
+      open_ai, open_boss, enterprise_id, 
+      mobile, mail, weixin, 
+      address, role, soft_img_url, 
+      signature, /*signature_vedio*/vidio_id, discount,
+      temlate_id, discount_type)
+    values (#{id,jdbcType=VARCHAR}, #{wxId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{modifyTime,jdbcType=TIMESTAMP}, #{createStaffId,jdbcType=VARCHAR}, #{passWord,jdbcType=VARCHAR}, 
+      #{departmentId,jdbcType=VARCHAR}, #{station,jdbcType=VARCHAR}, #{headIcon,jdbcType=VARCHAR}, 
+      #{openAi,jdbcType=INTEGER}, #{openBoss,jdbcType=INTEGER}, #{enterpriseId,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{mail,jdbcType=VARCHAR}, #{weixin,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR}, #{softImgUrl,jdbcType=VARCHAR}, 
+      #{signature,jdbcType=VARCHAR}, #{signatureVedio,jdbcType=VARCHAR}, #{discount,jdbcType=DECIMAL}, 
+      #{temlateId,jdbcType=INTEGER}, #{discountType,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.vma.push.business.entity.Staff">
+        insert into staff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="wxId != null">
+                wx_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="modifyTime != null">
+                modify_time,
+            </if>
+            <if test="createStaffId != null">
+                create_staff_id,
+            </if>
+            <if test="passWord != null">
+                pass_word,
+            </if>
+            <if test="departmentId != null">
+                department_id,
+            </if>
+            <if test="station != null">
+                station,
+            </if>
+            <if test="headIcon != null">
+                head_icon,
+            </if>
+            <if test="openAi != null">
+                open_ai,
+            </if>
+            <if test="openBoss != null">
+                open_boss,
+            </if>
+            <if test="enterpriseId != null">
+                enterprise_id,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="mail != null">
+                mail,
+            </if>
+            <if test="weixin != null">
+                weixin,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="role != null">
+                role,
+            </if>
+            <if test="softImgUrl != null">
+                soft_img_url,
+            </if>
+            <if test="signature != null">
+                signature,
+            </if>
+            <!--<if test="signatureVedio != null" >
+              signature_vedio,
+            </if>-->
+            <if test="vidioId !=null">
+                vidio_id,
+            </if>
+            <if test="audioId !=null">
+                audio_id,
+            </if>
+            <if test="discount != null">
+                discount,
+            </if>
+            <if test="temlateId != null">
+                temlate_id,
+            </if>
+            <if test="discountType != null">
+                discount_type,
+            </if>
+            <if test="openid != null">
+                open_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="wxId != null">
+                #{wxId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="modifyTime != null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createStaffId != null">
+                #{createStaffId,jdbcType=VARCHAR},
+            </if>
+            <if test="passWord != null">
+                #{passWord,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=VARCHAR},
+            </if>
+            <if test="station != null">
+                #{station,jdbcType=VARCHAR},
+            </if>
+            <if test="headIcon != null">
+                #{headIcon,jdbcType=VARCHAR},
+            </if>
+            <if test="openAi != null">
+                #{openAi,jdbcType=INTEGER},
+            </if>
+            <if test="openBoss != null">
+                #{openBoss,jdbcType=INTEGER},
+            </if>
+            <if test="enterpriseId != null">
+                #{enterpriseId,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="mail != null">
+                #{mail,jdbcType=VARCHAR},
+            </if>
+            <if test="weixin != null">
+                #{weixin,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="role != null">
+                #{role,jdbcType=VARCHAR},
+            </if>
+            <if test="softImgUrl != null">
+                #{softImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="signature != null">
+                #{signature,jdbcType=VARCHAR},
+            </if>
+            <!--<if test="signatureVedio != null">-->
+                <!--#{signatureVedio,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <if test="vidioId !=null">
+                #{vidioId,jdbcType=VARCHAR},
+            </if>
+            <if test="audioId !=null">
+                #{audioId,jdbcType=VARCHAR},
+            </if>
+            <if test="discount != null">
+                #{discount,jdbcType=DECIMAL},
+            </if>
+            <if test="temlateId != null">
+                #{temlateId,jdbcType=INTEGER},
+            </if>
+            <if test="discountType != null">
+                #{discountType,jdbcType=INTEGER},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.Staff">
+        update staff
+        <set>
+            <if test="wxId != null">
+                wx_id = #{wxId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createStaffId != null">
+                create_staff_id = #{createStaffId,jdbcType=VARCHAR},
+            </if>
+            <if test="passWord != null">
+                pass_word = #{passWord,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId,jdbcType=VARCHAR},
+            </if>
+            <if test="station != null">
+                station = #{station,jdbcType=VARCHAR},
+            </if>
+            <if test="headIcon != null">
+                head_icon = #{headIcon,jdbcType=VARCHAR},
+            </if>
+            <if test="openAi != null">
+                open_ai = #{openAi,jdbcType=INTEGER},
+            </if>
+            <if test="openBoss != null">
+                open_boss = #{openBoss,jdbcType=INTEGER},
+            </if>
+            <if test="enterpriseId != null">
+                enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="mail != null">
+                mail = #{mail,jdbcType=VARCHAR},
+            </if>
+            <if test="weixin != null">
+                weixin = #{weixin,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="role != null">
+                role = #{role,jdbcType=VARCHAR},
+            </if>
+            <if test="softImgUrl != null">
+                soft_img_url = #{softImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="signature != null">
+                signature = #{signature,jdbcType=VARCHAR},
+            </if>
+            <!--<if test="signatureVedio != null" >
+              signature_vedio = #{signatureVedio,jdbcType=VARCHAR},
+            </if>-->
+            <if test="vidioId != null">
+                vidio_id = #{vidioId,jdbcType=VARCHAR},
+            </if>
+            <if test="audioId != null">
+                audio_id = #{audioId,jdbcType=VARCHAR},
+            </if>
+            <if test="discount != null">
+                discount = #{discount,jdbcType=DECIMAL},
+            </if>
+            <if test="temlateId != null">
+                temlate_id = #{temlateId,jdbcType=INTEGER},
+            </if>
+            <if test="discountType != null">
+                discount_type = #{discountType,jdbcType=INTEGER},
+            </if>
+            <if test="openid != null">
+                open_id = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="firstLetter != null">
+                first_letter = #{firstLetter,jdbcType=VARCHAR},
+            </if>
+            <if test="auditStaffId != null">
+                audit_staff_id = #{auditStaffId,jdbcType=VARCHAR},
+            </if>
+            <if test="auditTime != null">
+                audit_time = #{auditTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.Staff">
+    update staff
+    set wx_id = #{wxId,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      create_staff_id = #{createStaffId,jdbcType=VARCHAR},
+      pass_word = #{passWord,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=VARCHAR},
+      station = #{station,jdbcType=VARCHAR},
+      head_icon = #{headIcon,jdbcType=VARCHAR},
+      open_ai = #{openAi,jdbcType=INTEGER},
+      open_boss = #{openBoss,jdbcType=INTEGER},
+      enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      mail = #{mail,jdbcType=VARCHAR},
+      weixin = #{weixin,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      role = #{role,jdbcType=VARCHAR},
+      soft_img_url = #{softImgUrl,jdbcType=VARCHAR},
+      signature = #{signature,jdbcType=VARCHAR},
+     /* signature_vedio = #{signatureVedio,jdbcType=VARCHAR},*/
+      vidio_id = #{vidio_id,jdbcType=VARCHAR},
+      audio_id = #{audio_id,jdbcType=VARCHAR},
+      discount = #{discount,jdbcType=DECIMAL},
+      temlate_id = #{temlateId,jdbcType=INTEGER},
+      discount_type = #{discountType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+    <!-- Video -->
+    <select id="getVideo" parameterType="String" resultType="Map">
+        select * from attachment_vedio where creator_id = #{staffId}
+    </select>
+    <insert id="addVideo" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+        insert into attachment_vedio (id, url, size, duration, cover_imageurl, creator_id, createtime) values (#{id}, #{source}, #{size}, #{duration}, #{cover}, #{staffId}, NOW())
+    </insert>
+
+    <delete id="delVideoByStaffId" parameterType="String">
+        delete from attachment_vedio where creator_id = #{staffId}
+    </delete>
+
+    <update id="updStaffVideo" parameterType="Map">
+        update staff set vidio_id = #{id} where id = #{staffId}
+    </update>
+
+    <!-- CardStyle -->
+    <update id="updCardStyle" parameterType="Map">
+        update staff set temlate_id = #{template}, head_icon = #{headIcon} where id = #{staffId}
+    </update>
+
+    <!-- ShareSetup -->
+    <update id="updShareSetup" parameterType="Map">
+        update staff set share_setup = #{content} where id = #{staffId}
+    </update>
+
+    <!-- Website -->
+    <select id="getWebsiteByEnterpriseId" parameterType="String" resultType="com.vma.push.business.dto.Website">
+        select * from website where enterprise_id = #{id}
+    </select>
+
+    <insert id="addWebsite" parameterType="com.vma.push.business.dto.Website">
+        insert into website (id, name, enterprise_id, create_time) values (#{id}, #{name}, #{enterprise_id}, NOW())
+    </insert>
+
+    <update id="updEnterpriseWebsite" parameterType="com.vma.push.business.dto.Website">
+        update enterprise set website_id = #{id} where id = #{enterprise_id}
+    </update>
+
+    <select id="getWebsiteComponentById" parameterType="String" resultType="com.vma.push.business.dto.WebsiteTemplate">
+        select *, text_content as textContent from website_template where website_id = #{id} order by order_num
+    </select>
+
+    <insert id="insWebsiteComponent" parameterType="com.vma.push.business.dto.WebsiteTemplate">
+        insert into website_template (id, text_content, create_time, enterprise_id, type, order_num, config, website_id) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.textContent}, NOW(), #{item.enterprise_id}, #{item.type}, #{item.order_num}, #{item.config}, #{item.website_id})
+        </foreach>
+    </insert>
+
+    <delete id="delWebsiteComponentById" parameterType="String">
+        delete from website_template where website_id = #{id}
+    </delete>
+
+</mapper>

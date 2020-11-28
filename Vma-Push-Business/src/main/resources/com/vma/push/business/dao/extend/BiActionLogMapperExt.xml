@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.BiActionLogMapper" >
+  <select id="queryActionNum" resultType="java.lang.Long" parameterType="java.lang.String">
+      SELECT count(1) num FROM bi_action_log WHERE staff_id = #{staffId} AND action_code = #{actionCode}
+  </select>
+
+  <select id="countAction" resultType="java.lang.Long">
+      call pro_test_partlist(#{departmentId},#{enterpriseId});
+      SELECT ifnull((
+      SELECT sum(num)
+      FROM bi_action_log
+      WHERE enterprise_id = #{enterpriseId}
+      <if test="departmentId != null and departmentid != '' ">
+          AND department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+      </if>
+      <if test="code != null and code != '' ">
+          AND action_code = #{code}
+      </if>
+      <if test="day != null">
+          AND to_days(now())-to_days(create_time) <![CDATA[<=]]> #{day}
+      </if>
+      <if test="staffId != null and staffId != ''">
+          AND staff_id = #{staffId}
+      </if>
+      )+
+      (
+      SELECT count(1) num FROM click_action_log WHERE enterprise_id = #{enterpriseId}
+      <if test="departmentId != null and departmentid != '' ">
+          AND department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+      </if>
+      <if test="code != null and code != '' ">
+          AND action_code = #{code}
+      </if>
+        AND to_days(now())-to_days(create_time) <![CDATA[<=]]> 0
+      <if test="staffId != null and staffId != ''">
+          AND employee_id = #{staffId}
+      </if>
+      ),0)
+      FROM dual
+  </select>
+
+  <select id="countEveryAction" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem" parameterType="java.lang.String">
+    SELECT
+      max(t.num) 'value',
+      t.action_code name
+    FROM (
+           SELECT
+             sum(num) num,
+             action_code
+           FROM bi_action_log
+           WHERE enterprise_id = #{enterpriseId}
+           <if test="departmentId != null and departmentId != '' ">
+               AND department_id = #{departmentId}
+           </if>
+           GROUP BY action_code, staff_id) t
+    GROUP BY t.action_code
+  </select>
+
+    <select id="countActionsByStaff" parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT ifnull(sum(num),0) num FROM bi_action_log
+        WHERE staff_id = #{staffId}
+        AND enterprise_id = #{enterpriseId} AND department_id = #{departmentId}
+        AND action_code IN
+        <foreach collection="codes" item="code" index="index"
+                 open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <select id="countAllActionNum" parameterType="java.util.Map" resultType="com.vma.push.business.dto.rsp.staff.RspStaffAnalysis">
+        SELECT
+          s.*,
+          ifnull(t.num, 0) num
+        FROM staff s LEFT JOIN (
+                                 SELECT
+                                   sum(num) num,
+                                   log.staff_id
+                                 FROM bi_action_log log
+                                 GROUP BY log.staff_id
+                                 ORDER BY num
+                               ) t ON s.id = t.staff_id
+        WHERE s.enterprise_id = #{enterpriseId} AND
+         FIND_IN_SET(s.department_id,getParLst(#{departmentId} ,#{enterpriseId}))
+         AND s.status=1
+        ORDER BY  num DESC
+    </select>
+
+
+    <select id="funnel" parameterType="com.vma.push.business.dto.req.ReqFunnel" resultType="java.lang.Integer">
+        <if test="department_id!=null">
+            CALL pro_test_partlist(#{department_id},#{enterprise_id});
+        </if>
+        select sum(count) from(
+            SELECT COUNT(1) count from user_staff_rela
+            where datediff(now(),create_time)<![CDATA[<]]>#{day}
+            and enterprise_id=#{enterprise_id}
+            <if test="department_id!=null">
+                and department_id in(select id from child_dept_enter where department_id=#{department_id})
+            </if>
+
+            <if test="staff_id!=null">
+                and staff_id=#{staff_id}
+            </if>
+            <if test="type==1">
+                and clinch_rate<![CDATA[<]]>50
+            </if>
+
+            <if test="type==2">
+                and clinch_rate<![CDATA[<]]>80 and clinch_rate>=50
+            </if>
+
+            <if test="type==3">
+                and clinch_rate<![CDATA[<]]>90 and clinch_rate>=80
+            </if>
+
+            <if test="type==4">
+                and clinch_rate<![CDATA[<]]>100 and clinch_rate>=90
+            </if>
+            UNION
+            SELECT COUNT(1) count from user_staff_rela
+            where datediff(now(),create_time)<![CDATA[<]]>#{day}
+            and enterprise_id=#{enterprise_id}
+            <if test="department_id!=null">
+                and department_id in(select id from child_dept_enter where department_id=#{department_id})
+            </if>
+
+            <if test="staff_id!=null">
+                and staff_id=#{staff_id}
+            </if>
+            <if test="type==1">
+                and rate<![CDATA[<]]>50 and clinch_rate is NULL
+            </if>
+
+            <if test="type==2">
+                and rate<![CDATA[<]]>80 and rate>=50  and clinch_rate is NULL
+            </if>
+
+            <if test="type==3">
+                and rate<![CDATA[<]]>90 and rate>=80 and clinch_rate is NULL
+            </if>
+
+            <if test="type==4">
+                and rate<![CDATA[<]]>100 and rate>=90 and clinch_rate is NULL
+            </if>
+        ) a
+
+    </select>
+    <select id="lastfunnel" parameterType="com.vma.push.business.dto.req.ReqFunnel" resultType="java.lang.Integer">
+        select sum(count) from(
+        SELECT COUNT(1) count from user_staff_rela
+        where datediff(date_sub(now(),interval #{day} DAY),create_time)<![CDATA[<]]>#{day}
+        and enterprise_id=#{enterprise_id}
+        <if test="department_id!=null">
+            and department_id in(select id from child_dept_enter where department_id=#{department_id})
+        </if>
+
+        <if test="staff_id!=null">
+            and staff_id=#{staff_id}
+        </if>
+        <if test="type==1">
+            and clinch_rate<![CDATA[<]]>50
+        </if>
+
+        <if test="type==2">
+            and clinch_rate<![CDATA[<]]>80 and clinch_rate>=50
+        </if>
+
+        <if test="type==3">
+            and clinch_rate<![CDATA[<]]>90 and clinch_rate>=80
+        </if>
+
+        <if test="type==4">
+            and clinch_rate<![CDATA[<]]>100 and clinch_rate>=90
+        </if>
+        UNION
+        SELECT COUNT(1) count from user_staff_rela
+        where datediff(date_sub(now(),interval #{day} DAY),create_time)<![CDATA[<]]>#{day}
+        and enterprise_id=#{enterprise_id}
+        <if test="department_id!=null">
+            and department_id in(select id from child_dept_enter where department_id=#{department_id})
+        </if>
+
+        <if test="staff_id!=null">
+            and staff_id=#{staff_id}
+        </if>
+        <if test="type==1">
+            and rate<![CDATA[<]]>50 and clinch_rate is NULL
+        </if>
+
+        <if test="type==2">
+            and rate<![CDATA[<]]>80 and rate>=50  and clinch_rate is NULL
+        </if>
+
+        <if test="type==3">
+            and rate<![CDATA[<]]>90 and rate>=80 and clinch_rate is NULL
+        </if>
+
+        <if test="type==4">
+            and rate<![CDATA[<]]>100 and rate>=90 and clinch_rate is NULL
+        </if>
+        ) a
+    </select>
+    <select id="money"  parameterType="com.vma.push.business.dto.req.ReqFunnel" resultType="com.vma.push.business.dto.rsp.boss.RspKeyValue">
+        CALL pro_test_partlist(#{department_id},#{enterprise_id});
+        select date_format(datelist, '%m-%d') name,IFNULL(VALUE,0) value from calendar a left join(
+            select date_format(create_time, '%Y-%m-%d') `name` ,sum(total_price) `value` from shop_order
+            where datediff(now(),create_time)<![CDATA[<]]>#{day}
+            and enterprise_id=#{enterprise_id}
+            AND department_id IN (select id from child_dept_enter where department_id=#{department_id})
+            GROUP BY date_format(create_time, '%Y-%m-%d')
+            ORDER BY create_time
+        ) b ON b.name=a.datelist
+        where datediff(now(),a.datelist)<![CDATA[<]]>#{day} and a.datelist<![CDATA[<]]>now()
+        ORDER BY a.datelist
+
+    </select>
+    <select id="order"  parameterType="com.vma.push.business.dto.req.ReqFunnel" resultType="com.vma.push.business.dto.rsp.boss.RspKeyValue">
+        CALL pro_test_partlist(#{department_id},#{enterprise_id});
+        select date_format(datelist, '%m-%d') name,IFNULL(VALUE,0) value from calendar a left join (
+            select date_format(create_time, '%Y-%m-%d') `name` ,count(1) `value` from shop_order
+            where datediff(now(),create_time)<![CDATA[<]]>#{day}
+            and enterprise_id=#{enterprise_id}
+            AND department_id IN (select id from child_dept_enter where department_id=#{department_id})
+            GROUP BY date_format(create_time, '%Y-%m-%d')
+            ORDER BY create_time
+        ) b ON b.name=a.datelist
+        where datediff(now(),a.datelist)<![CDATA[<]]>#{day} and a.datelist<![CDATA[<]]>now()
+        ORDER BY a.datelist
+
+
+
+    </select>
+    <select id="cusView" parameterType="java.util.Map" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem">
+        select a.datelist `name`,ifnull(b.value,0) `value` from calendar a left join (
+        select date_format(create_time, '%Y-%m-%d') `name`,count(1) `value`
+        from user_staff_rela where enterprise_id=#{enterpriseId}
+        group by date_format(create_time, '%Y-%m-%d')
+        ) b on a.datelist=b.name
+        where  datediff(now(),a.datelist)<![CDATA[<]]> #{day} AND now()<![CDATA[>]]>a.datelist
+        ORDER BY a.datelist;
+    </select>
+    <select id="clickView" parameterType="java.util.Map" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem">
+        select a.datelist `name`,ifnull(b.value,0) `value` from calendar a left join (
+        select date_format(create_time, '%Y-%m-%d') `name`,count(1) `value` from click_action_log
+        where action_code=#{code} and enterprise_id=#{enterpriseId}
+        group by date_format(create_time, '%Y-%m-%d')
+        ) b on a.datelist=b.name
+        where datediff(now(),a.datelist)<![CDATA[<]]> #{day} AND now()<![CDATA[>]]>a.datelist
+        ORDER BY a.datelist;
+    </select>
+
+</mapper>

@@ -1,0 +1,1113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.StaffMapper">
+
+    <resultMap id="BaseResultMap1" type="com.vma.push.business.dto.rsp.staff.RspStaff">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="department_id" property="department_id" jdbcType="VARCHAR"/>
+        <result column="department_name" property="department_name" jdbcType="VARCHAR"/>
+        <result column="station" property="station" jdbcType="VARCHAR"/>
+        <result column="head_icon" property="head_icon" jdbcType="VARCHAR"/>
+        <result column="open_ai" property="open_ai" jdbcType="INTEGER"/>
+        <result column="open_boss" property="open_boss" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="BaseResult" type="com.vma.push.business.entity.Staff">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <result column="create_staff_id" property="createStaffId" jdbcType="VARCHAR"/>
+        <result column="pass_word" property="passWord" jdbcType="VARCHAR"/>
+        <result column="department_id" property="departmentId" jdbcType="VARCHAR"/>
+        <result column="station" property="station" jdbcType="VARCHAR"/>
+        <result column="head_icon" property="headIcon" jdbcType="VARCHAR"/>
+        <result column="open_ai" property="openAi" jdbcType="INTEGER"/>
+        <result column="open_boss" property="openBoss" jdbcType="INTEGER"/>
+        <result column="enterprise_id" property="enterpriseId" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="mail" property="mail" jdbcType="VARCHAR"/>
+        <result column="weixin" property="weixin" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="open_id" property="openid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="StaffListByUserId" resultMap="BaseResultMap1" parameterType="java.lang.String">
+        SELECT
+          a.id,
+          a.name,
+          a.phone,
+          a.status,
+          a.create_staff_id,
+          a.department_id,
+          a.station,
+          a.head_icon,
+          a.open_ai,
+          a.open_boss,
+          d.name department_name
+        FROM staff a LEFT JOIN user_info b ON a.id = b.employee_id,department d
+        WHERE b.id = #{id} AND a.department_id = d.id
+    </select>
+    <select id="getAll" resultType="com.vma.push.business.dto.rsp.staff.RspStaff" parameterType="java.lang.String">
+        select
+        a.wx_id,a.soft_img_url,a.id,a.name,a.phone,a.status,a.create_staff_id,a.department_id,a.station,a.head_icon,a.open_ai,a.open_boss,b.`name`
+        department_name,a.temlate_id
+        from staff a left join department b on a.department_id=b.id and a.enterprise_id=b.enterprise_id
+        where a.enterprise_id=#{enid} and a.STATUS=1
+        <if test="deptid != null and deptid != ''">
+            AND FIND_IN_SET(a.department_id,getParLst(#{deptid},#{enid}))
+        </if>
+        <if test="name!=null">
+            and a.name like '%${name}%'
+        </if>
+        order BY a.create_time DESC
+    </select>
+
+    <select id="selectByUserNameAndPassword" parameterType="com.vma.push.business.dto.req.ReqSystemLogin"
+            resultType="java.lang.Integer">
+        select count(*) from staff where name = #{name} and pass_word=#{pass_word} and status=1;
+    </select>
+
+    <select id="findEnterpriseId" parameterType="java.lang.String" resultType="java.lang.String">
+       select department.enterprise_id from staff,department where staff.department_id = department.id and staff.id=#{id}
+   </select>
+
+    <select id="radar" resultType="com.vma.push.business.dto.rsp.staff.RspStaff">
+        select staff.id,staff.head_icon,staff.name,staff.station,staff.phone,staff.open_ai,staff.open_boss,department.name department_name from staff,department where staff.department_id=department.id
+    </select>
+
+    <select id="findStaffSelect" parameterType="com.vma.push.business.dto.req.ReqStaffSelect"
+            resultType="com.vma.push.business.dto.rsp.staff.RspStaff">
+        select staff.soft_img_url,
+        staff.id,staff.head_icon,staff.name,staff.station,staff.phone,staff.open_ai,staff.open_boss,department.name
+        department_name from staff,department where staff.enterprise_id=#{enterprise_id}
+        AND staff.enterprise_id = department.enterprise_id
+        AND staff.department_id = department.id
+        AND staff.status=1
+        <if test="name != null and name != ''">
+            AND staff.name LIKE '%${name}%'
+        </if>
+        order by staff.create_time DESC
+    </select>
+
+    <select id="selectStaff" parameterType="com.vma.push.business.dto.req.ReqSystemLogin" resultMap="BaseResult">
+        select
+        <include refid="Base_Column_List"/>
+        from staff WHERE phone = #{phone} and pass_word=#{pass_word}
+
+    </select>
+    <select id="getByStaffId" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspCard">
+          select
+          s.id employee_id,
+          s.name,
+          s.station,
+          d.name department_name,
+          s.phone,
+          s.mail,
+          s.head_icon,
+		  e.id enterprise_id,
+		  e.`name`  enterprise_name,
+		  soft_img_url
+          from staff s LEFT join department d on s.department_id=d.id and s.enterprise_id=d.enterprise_id
+          left join enterprise e ON s.enterprise_id=e.id
+          where s.id=#{staffid} and s.enterprise_id=#{enid}
+    </select>
+    <select id="queryCardInfo" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.staff.RspCardInfo">
+        SELECT
+          s.id staffId,
+          s.name,
+          s.station,
+          d.name department_name,
+          s.mobile,
+          s.mail,
+          s.weixin,
+          s.phone,
+          s.address,
+          s.signature,
+          /*s.signature_vedio,*/
+          s.vidio_id,
+          s.audio_id,
+          /*s.signature_audio,*/
+          rela.is_zan,
+          s.head_icon,
+          s.temlate_id,
+          s.discount,
+          e.head_icon icon,
+          s.role,
+          s.wx_id,
+          s.soft_img_url,
+          s.share_setup,
+          rela.user_id userId,
+          s.enterprise_id,
+          d.id department_id,
+          s.card_img_url
+        FROM staff s
+        left join  department d on s.department_id=d.id and s.enterprise_id=d.enterprise_id
+        left join  user_staff_rela rela on s.id=rela.staff_id
+        left join enterprise e on e.id=s.enterprise_id
+        WHERE  s.id = #{id}
+               and rela.user_id=#{userId}
+               AND d.enterprise_id = #{enterpriseId}
+               AND s.STATUS = 1
+               AND e.status = 1
+               limit 1;
+    </select>
+
+    <select id="queryCardTemplateId" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.staff.RspTemplate">
+        SELECT
+        s.temlate_id
+        FROM staff s, department d
+        WHERE s.department_id = d.id AND s.id = #{id}
+        AND d.enterprise_id = #{enterpriseId}
+        AND s.STATUS=1
+        limit 1
+    </select>
+
+    <select id="queryUsedCardNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+      SELECT count(1) num
+        FROM staff
+        WHERE enterprise_id = #{enterpriseId} AND (open_ai = 1 OR open_boss = 1 ) and status = '1'
+    </select>
+
+    <select id="getStaffByDepart" resultMap="BaseResultMap1" parameterType="java.lang.String">
+        select a.id,
+        a.name,
+        a.phone,
+        a.status,
+        a.create_staff_id,
+        a.department_id,
+        a.station,
+        a.head_icon,
+        a.open_ai,
+        a.open_boss,
+        b.name department_name
+        from staff a left join department b on a.department_id=b.id
+        and a.enterprise_id=b.enterprise_id and a.status=1
+        where b.enterprise_id=#{enterpriseid}
+        <if test="id != null">
+            AND FIND_IN_SET(a.department_id,getParLst(#{id},#{enterpriseid}))
+        </if>
+    </select>
+    <select id="staffOrderByOrderForm" resultType="com.vma.push.business.dto.rsp.staff.RspStaffOrder"
+            parameterType="com.vma.push.business.dto.req.staff.ReqStaffOrder">
+        call pro_test_partlist(#{department_id},#{enterprise_id});
+        select a.id,
+        a.name,
+        a.phone,
+        a.status,
+        a.create_staff_id,
+        a.department_id,
+        a.station,
+        a.head_icon,
+        a.open_ai,
+        a.open_boss,
+        b.name department_name,
+        ifnull(c.counts,0) user_num,
+        ifnull(c.total_price,0) `count`
+        from staff a
+        LEFT JOIN (
+        SELECT
+        staff_id,
+        count(1) counts,
+        sum(total_price) total_price
+        FROM shop_order
+        WHERE  shop_order. STATUS = 1
+        <if test="day_number != null">
+            AND DATE_SUB(CURDATE(), INTERVAL #{day_number} DAY) <![CDATA[<]]> date(shop_order.create_time)
+        </if>
+        GROUP BY staff_id
+        ) c ON a.id = c.staff_id
+        LEFT JOIN department b ON a.department_id = b.id
+        AND a.enterprise_id = b.enterprise_id
+        AND a. STATUS = 1
+        WHERE
+        b.enterprise_id = #{enterprise_id}
+        <if test="department_id != null">
+            AND FIND_IN_SET(
+            a.department_id,
+            getParLst (
+            #{department_id},
+            #{enterprise_id}
+            )
+            )
+        </if>
+        ORDER BY user_num DESC
+    </select>
+
+    <select id="staffOrderByUserNumber" resultType="com.vma.push.business.dto.rsp.staff.RspStaffOrder"
+            parameterType="com.vma.push.business.dto.req.staff.ReqStaffOrder">
+        call pro_test_partlist(#{department_id},#{enterprise_id});
+        select a.id,
+        a.name,
+        a.phone,
+        a.status,
+        a.create_staff_id,
+        a.department_id,
+        a.station,
+        a.head_icon,
+        a.open_ai,
+        a.open_boss,
+        b.name department_name,
+        ifnull(c.counts,0) user_num
+        from staff a
+        LEFT JOIN (
+        SELECT
+        staff_id,
+        count(distinct user_staff_rela.user_id) counts
+        FROM
+        user_staff_rela
+        WHERE
+        1=1
+        <if test="day_number != null">
+            <if test="day_number lt 2">AND TO_DAYS(NOW()) = TO_DAYS(user_staff_rela.create_time)+#{day_number}</if>
+            <if test="day_number gt 2">
+                AND DATE_SUB(CURDATE(), INTERVAL #{day_number} DAY) <![CDATA[<]]> date(user_staff_rela.create_time)
+            </if>
+        </if>
+        GROUP BY staff_id
+        ) c ON a.id = c.staff_id
+        LEFT JOIN department b ON a.department_id = b.id
+        AND a.enterprise_id = b.enterprise_id
+        AND a. STATUS = 1
+        WHERE
+        b.enterprise_id = #{enterprise_id}
+        <if test="department_id != null">
+            AND FIND_IN_SET(
+            a.department_id,
+            getParLst (
+            #{department_id},
+            #{enterprise_id}
+            )
+            )
+        </if>
+        ORDER BY user_num DESC
+    </select>
+
+    <select id="staffOrderByInteract" resultType="com.vma.push.business.dto.rsp.staff.RspStaffOrder"
+            parameterType="com.vma.push.business.dto.req.staff.ReqStaffOrder">
+        call pro_test_partlist(#{department_id},#{enterprise_id});
+        select a.id,
+        a.name,
+        a.phone,
+        a.status,
+        a.create_staff_id,
+        a.department_id,
+        a.station,
+        a.head_icon,
+        a.open_ai,
+        a.open_boss,
+        b.name department_name,
+        ifnull(c.counts,0) user_num
+        from staff a
+        LEFT JOIN (
+        SELECT
+        employee_id staff_id,
+        count(distinct click_action_log.employee_id,click_action_log.user_id) counts,
+        user_id
+        FROM
+        click_action_log
+        WHERE
+        1=1
+        <if test="user_type != null and user_type != ''">
+            <if test="user_type ==1">
+                AND click_action_log.action_code=1000
+            </if>
+            <if test="user_type ==2">
+                AND click_action_log.action_code=1018
+            </if>
+        </if>
+        <if test="day_number != null and day_number != ''">
+            <if test="day_number lt 2">
+                AND TO_DAYS(NOW()) = TO_DAYS(click_action_log.create_time)+#{day_number}
+            </if>
+            <if test="day_number gt 2">
+                AND DATE_SUB(CURDATE(), INTERVAL #{day_number} DAY) <![CDATA[<]]> date(click_action_log.create_time)
+            </if>
+        </if>
+        GROUP BY click_action_log.employee_id
+        ) c ON a.id = c.staff_id
+        LEFT JOIN department b ON a.department_id = b.id
+        AND a.enterprise_id = b.enterprise_id
+        AND a. STATUS = 1
+        WHERE
+        b.enterprise_id = #{enterprise_id}
+        <if test="department_id != null">
+            AND FIND_IN_SET(
+            a.department_id,
+            getParLst (
+            #{department_id},
+            #{enterprise_id}
+            )
+            )
+        </if>
+        ORDER BY user_num DESC
+    </select>
+
+    <select id="staffOrderByClosedRate" resultType="com.vma.push.business.dto.rsp.staff.RspStaffOrder"
+            parameterType="com.vma.push.business.dto.req.staff.ReqStaffOrder">
+        call pro_test_partlist(#{department_id},#{enterprise_id});
+        select a.id,
+        a.name,
+        a.phone,
+        a.status,
+        a.create_staff_id,
+        a.department_id,
+        a.station,
+        a.head_icon,
+        a.open_ai,
+        a.open_boss,
+        b.name department_name,
+        ifnull(c.user_num,0) user_num
+        from staff a
+        LEFT JOIN (
+        select staff_id,COUNT(distinct user_staff_rela.user_id) user_num from user_staff_rela where 1=1
+        <if test="low_close_rate!=null and low_close_rate!=''">and ifnull(clinch_rate,rate)<![CDATA[>=]]>
+            #{low_close_rate}
+        </if>
+        <if test="hight_close_rate!=null and hight_close_rate!=''">and ifnull(clinch_rate,rate)<![CDATA[<=]]>
+            #{hight_close_rate}
+        </if>
+        GROUP BY staff_id
+        ) c ON a.id = c.staff_id
+        LEFT JOIN department b ON a.department_id = b.id
+        AND a.enterprise_id = b.enterprise_id
+        AND a. STATUS = 1
+        WHERE
+        b.enterprise_id = #{enterprise_id}
+        <if test="department_id != null">
+            AND FIND_IN_SET(
+            a.department_id,
+            getParLst (
+            #{department_id},
+            #{enterprise_id}
+            )
+            )
+        </if>
+        ORDER BY c.user_num DESC
+    </select>
+
+    <select id="queryStaff" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspEnStaff">
+          select
+          s.id,
+          s.name,
+          s.phone,
+          s.status,
+          s.create_staff_id,
+          s.department_id,
+          s.station,
+          s.head_icon,
+          s.open_ai,
+          s.open_boss,
+          d.name department_name,
+          s.temlate_id,
+          s.mail,
+          s.wx_id
+		  from staff s left join department d  on  s.department_id=d.id and s.enterprise_id=d.enterprise_id
+          where s.enterprise_id=#{enid} and s.id=#{id}
+    </select>
+
+    <select id="getCard" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.editCard">
+        select
+        a.id,
+        a.wx_id,
+        a.head_icon,
+        a.station,
+        a.name,
+        a.department_id,
+        a.mobile,
+        a.mail,
+        a.weixin,
+        a.phone,
+        a.address,
+        a.signature,
+        d.`name` department_name,
+        a.soft_img_url
+        FROM staff a LEFT join department d on a.department_id=d.id  and a.enterprise_id=d.enterprise_id
+        where a.id= #{staffid} and a.enterprise_id=#{enid}
+    </select>
+
+    <select id="countUser" resultType="java.lang.Long" parameterType="java.util.Map">
+        SELECT count(1) num
+        FROM user_staff_rela
+        WHERE staff_id = #{staffId} AND department_id = #{departmentId} AND enterprise_id = #{enterpriseId}
+    </select>
+
+    <select id="findCarList" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.staff.RspCarlist">
+        select
+			s.id,
+			s.head_icon,
+			r.froms,
+			r.create_time,
+			r.status,
+			s.name,
+			s.station,
+			e.id enterprise_id,
+			e.name enterprise_name,
+			d.id department_id,
+			s.phone,
+			s.mobile from staff s
+			left join user_staff_rela r on s.id=r.staff_id and r.department_id=s.department_id and s.enterprise_id=r.enterprise_id
+            LEFT join department d on s.department_id=d.id and d.enterprise_id=s.enterprise_id
+            left join enterprise e on e.id=d.enterprise_id
+            where r.user_id= #{user_id} and s.status=1
+    </select>
+
+    <select id="findStaffByOpenId" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.staff.RspStaffLogin">
+        SELECT name FROM staff where id=#{id}
+    </select>
+
+    <select id="userinfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspUserinfo">
+
+        select id,nick_name,hx_im_login,head_icon from user_info where id in(
+select user_id from user_staff_rela
+where enterprise_id=#{enid} and staff_id=#{staffid})
+    </select>
+
+    <select id="staffInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspStaffinfo">
+        select pass_word,name,head_icon,soft_img_url from staff
+        where enterprise_id=#{enid} and id=#{id}
+    </select>
+    <select id="departname" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT `name` FROM department where id=#{id} and enterprise_id=#{enid}
+    </select>
+    <select id="userlist" resultType="com.vma.push.business.dto.rsp.RspHandover" parameterType="java.lang.String">
+        select a.user_id,b.nick_name user_name from user_staff_rela a left join user_info b on a.user_id=b.id
+        where a.enterprise_id=#{enid} and a.staff_id=#{fromid}
+    </select>
+
+    <select id="iscustomer" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(*) from user_staff_rela
+        where enterprise_id=#{enid} and staff_id=#{toid} and user_id=#{id}
+    </select>
+    <update id="handover" parameterType="java.lang.String">
+
+      update user_staff_rela set staff_id=#{toid},froms='3'
+      where staff_id=#{fromid} and user_id=#{id} and enterprise_id=#{enid}
+    </update>
+    <delete id="delcustomer" parameterType="java.lang.String">
+        DELETE FROM  user_staff_rela
+        where enterprise_id=#{enid} and staff_id=#{fromid} and user_id=#{id}
+    </delete>
+
+    <select id="intro" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspStaffIntro">
+      select * from staff_intro
+      where staff_id=#{staffid} and enterprise_id=#{enid}
+      order by `order`
+    </select>
+    <insert id="insertIntro" parameterType="com.vma.push.business.dto.req.ReqAddIntro">
+       INSERT INTO `staff_intro` (`id`, `staff_id`, `enterprise_id`, `url`, `type`, `create_time`,  `status`,`order`)
+      VALUES (#{id}, #{staff_id},  #{enterprise_id}, #{url}, #{type}, #{create_time},'1',#{order});
+
+    </insert>
+    <delete id="delIntro" parameterType="java.lang.String">
+        DELETE FROM staff_intro where staff_id=#{staffid} and enterprise_id=#{enid}
+    </delete>
+
+    <select id="findCond" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Staff">
+        select
+        <include refid="Base_Column_List"/>
+        from staff
+        where 1=1
+        <if test="departmentId != null and departmentId != ''">
+            and department_id = #{departmentId}
+        </if>
+        <if test="enterpriseId != null and enterpriseId != '' ">
+            and enterprise_id = #{enterpriseId}
+        </if>
+    </select>
+    <select id="staffName" parameterType="java.lang.String" resultType="java.lang.String">
+        select name FROM staff where id=#{id}
+    </select>
+    <select id="childDept" parameterType="java.lang.String" resultType="java.lang.String">
+        select id from department
+        where enterprise_id=#{enid} and parent_id=#{dept}
+    </select>
+    <select id="getSig" parameterType="java.lang.String" resultType="java.lang.String">
+        select signature from staff where id=#{staffid} and enterprise_id=#{enid}
+    </select>
+    <update id="editSig" parameterType="java.lang.String">
+        update staff set signature=#{content} where id=#{staffid} and enterprise_id=#{enid};
+    </update>
+
+    <select id="getSigVideo" parameterType="java.lang.String" resultType="java.lang.String">
+        /*select signature_vedio from staff where id=#{staffid} and enterprise_id=#{enid}*/
+        select vidio_id from staff where id=#{staffid} and enterprise_id=#{enid}
+    </select>
+    <update id="editSigVideo" parameterType="java.lang.String">
+        /*update staff set signature_vedio=#{content} where id=#{staffid} and enterprise_id=#{enid};*/
+        update staff set vidio_id=#{content} where id=#{staffid} and enterprise_id=#{enid}
+    </update>
+
+    <select id="getCallingCardNumber" resultType="java.lang.Integer">
+        CALL pro_test_EnterPartList(#{enterprise_id});
+        SELECT
+        count(1)
+        FROM
+        staff
+        WHERE
+        enterprise_id IN (
+        SELECT
+        id
+        FROM
+        enterprise
+        WHERE
+        id in(select id from child_dept_enter where enterprise_id=#{enterprise_id})
+        )
+        <if test='dayNumber !=null and dayNumber lt 2'>
+            AND TO_DAYS(NOW()) = TO_DAYS(create_time) +#{dayNumber}
+        </if>
+        <if test='dayNumber !=null and dayNumber gt 1'>
+            AND DATE_SUB(CURDATE(), INTERVAL #{dayNumber} DAY) <![CDATA[<]]> date(staff.create_time)
+        </if>
+
+    </select>
+    <select id="getCallingCardNumberByDayNumber" resultType="com.vma.push.business.dto.rsp.RspDaysCardNumber">
+        CALL pro_test_EnterPartList(#{enterprise_id});
+        SELECT
+          c.datetime create_time,
+          ifnull(s.count,0) card_number
+        FROM
+         ( SELECT datelist AS datetime FROM calendar WHERE datelist <![CDATA[>=]]> date(now()) - INTERVAL #{dayNumber} DAY AND datelist <![CDATA[<]]> now()
+        ) c left join (
+          SELECT
+            date(create_time) as datetime, count(*) as count
+          FROM
+            staff
+          WHERE
+            enterprise_id IN (select id from child_dept_enter where enterprise_id=#{enterprise_id})
+            AND create_time <![CDATA[>=]]> date(now()) - INTERVAL #{dayNumber} DAY AND create_time <![CDATA[<]]> now()
+            GROUP BY DATE (create_time)
+        ) s on c.datetime = s.datetime
+        ORDER BY c.datetime asc
+    </select>
+    <delete id="delintro" parameterType="java.lang.String">
+        delete FROM  staff_intro where id=#{id}
+    </delete>
+
+    <select id="AllUserAndStaff" resultType="com.vma.push.business.dto.req.ReqUserAndStaff">
+        select id,`name`,enterprise_id from staff
+        UNION
+        select b.id,b.nick_name `name`,a.enterprise_id
+        from user_staff_rela a left join user_info b on a.user_id=b.id
+        where a.id is not NULL
+
+    </select>
+
+    <select id="selectStaffById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from staff
+        where wx_id = #{userid,jdbcType=VARCHAR} and enterprise_id=#{enid,jdbcType=VARCHAR}
+    </select>
+    <select id="findstaffBywxidAndEnid" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select  *
+        from staff where
+         wx_id=#{userid}
+         and enterprise_id=#{enterpriseid}
+
+    </select>
+    <select id="findWxId" parameterType="java.lang.String" resultType="java.lang.String">
+      select wx_id from staff where id=#{staffId}
+    </select>
+    <select id="findEnterIconAndWxLogo" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.staff.RspEnterIconAndWxLogo">
+        SELECT
+        staff.soft_img_url,enterprise.head_icon,enterprise.name
+        FROM
+        staff LEFT JOIN enterprise on staff.enterprise_id = enterprise.id
+        WHERE staff.id=#{staffId}
+    </select>
+    <update id="delStaff" parameterType="java.lang.String">
+        update staff set STATUS=0 where id=#{id}
+    </update>
+    <select id="getHttpUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from staff where head_icon like 'http___p%';
+    </select>
+    <select id="defaultStaff" parameterType="java.lang.String" resultType="java.lang.String">
+        select id from staff where enterprise_id=#{enid}
+        ORDER BY create_time limit 1
+    </select>
+    <select id="deptByStaff" parameterType="java.lang.String" resultType="java.lang.String">
+      select department_id from staff where id=#{staffid}
+    </select>
+    <select id="bossUserInfo" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.boss.RspUserInfo">
+        select s.`name`,e.`name` enterprise,d.`name` department,s.station,s.phone,s.soft_img_url,s.mail mail, s.head_icon head_icon
+        from staff s ,enterprise e ,department d
+        where s.enterprise_id=e.id and s.department_id=d.id and s.enterprise_id=d.enterprise_id and
+        s.id=#{id} and s.enterprise_id=#{enterpriseId} limit 1
+    </select>
+    <select id="bossCustomCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from user_staff_rela where staff_id=#{id} and enterprise_id=#{enterpriseId}
+    </select>
+    <select id="bossAttachCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select COUNT(DISTINCT user_id) from click_action_log
+        where employee_id=#{id} and enterprise_id=#{enterpriseId}
+        and action_code='1000'
+    </select>
+    <select id="staffEnterDiscount" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.store.RspStaffDiscount">
+
+    select s.name staff_name,e.name enterprise_name,s.discount,s.head_icon from staff s
+    left join enterprise e on s.enterprise_id=e.id
+    where s.id=#{staffId} and s.enterprise_id=#{enterpriseId} limit 1
+    </select>
+    <update id="setEnterDiscount" parameterType="com.vma.push.business.dto.req.store.ReqEnterDiscount">
+      update staff set discount=#{count} where enterprise_id=#{enterprise_id} and discount_type=0
+    </update>
+    <update id="setStaffDiscount" parameterType="com.vma.push.business.dto.req.store.ReqEnterDiscount">
+        update staff set discount=#{count},discount_type=#{type} where enterprise_id=#{enterprise_id} and id=#{id}
+    </update>
+    <select id="findDiscount" parameterType="java.lang.String" resultType="java.math.BigDecimal">
+      select discount from staff where id=#{staffid}
+    </select>
+    <select id="staffDiscount" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.store.RspStaffDiscount2">
+
+select name staff_name,discount,head_icon from staff where id=#{staffid}
+    </select>
+    <select id="discountList" parameterType="com.vma.push.business.dto.req.store.ReqDiscount"
+            resultType="com.vma.push.business.dto.rsp.store.RspDiscount">
+        select s.id,s.`name`,s.head_icon,s.station,d.`name` department_name,s.phone,s.discount_type,s.discount
+        from staff s
+        left join department d on s.department_id=d.id
+        where s.enterprise_id=#{enterprise_id} and d.enterprise_id=#{enterprise_id}
+        and s.`status`=1
+        <if test="department_id!=null">
+            and s.department_id=#{department_id}
+        </if>
+        <if test="discount_type!=null">
+            and s.discount_type=#{discount_type}
+        </if>
+        <if test="staff_name!=null">
+            and s.name like '%${staff_name}%'
+        </if>
+
+
+    </select>
+    <select id="isRadar" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from staff
+        where  id=#{id}
+        and (open_ai=1 or open_boss=1)
+    </select>
+    <select id="customCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from user_staff_rela where staff_id=#{staffId}
+    </select>
+    <select id="staffRadar" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from staff where  id=#{id} and (open_ai=1 or open_boss=1)
+    </select>
+    <select id="repeatCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from (
+        select distinct user_id from user_staff_rela
+        where staff_id in (#{fromid},#{toid})
+        group by user_id having count(user_id)>1
+        ) a
+    </select>
+    <select id="userIcons" parameterType="java.lang.String" resultType="java.lang.String">
+        select distinct b.head_icon from click_action_log a left join user_info b on a.user_id=b.id
+where a.employee_id=#{staffId} and a.action_code='1001'
+  and b.id is not null
+order by a.create_time desc limit 6
+    </select>
+    <select id="viewNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+      select count(1) from click_action_log where employee_id=#{staffId} and action_code='1001';
+    </select>
+    <select id="consult" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from click_action_log where action_code='1018' and employee_id=#{id}
+    </select>
+
+    <select id="findAllStaff" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Staff">
+        select id,department_id departmentId,enterprise_id enterpriseId, soft_img_url softImgUrl from staff where enterprise_id=#{enterpriseId} and status=1;
+    </select>
+
+    <select id="getStaffByOpenidAndEntId" parameterType="java.lang.String"
+            resultType="com.vma.push.business.entity.Staff">
+        select * from staff where open_id=#{openid} and enterprise_id=#{enterpriseId}
+    </select>
+    <select id="getStaffByUserIdAndSoftId" parameterType="java.lang.String"
+            resultType="com.vma.push.business.entity.Staff">
+        select staff.id id,staff.enterprise_id enterpriseId ,staff.role role
+         from staff staff
+	     inner join user_staff_rela rela					on staff.id = rela.staff_id
+	     inner join user_info  		 wxuser				on wxuser.id = rela.user_id
+         where wxuser.id =#{userId}
+		 and wxuser.wx_soft_id =#{wxSoftId}
+		 and staff.open_id = wxuser.open_id
+    </select>
+
+    <select id="getStaffByIdAndOpenId" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Staff">
+        select staff.id id,staff.enterprise_id enterpriseId ,staff.role role from staff staff where id = #{staffId} and open_id = #{openId}
+    </select>
+
+    <select id="queryStaffLabelAndReferLabelInfo" resultType="com.vma.push.business.dto.rsp.userInfo.RspUserLabelInfo"
+            parameterType="java.lang.String">
+        select lb.id label_id,lb.label_name,lb.type,1 is_refer from label_user_rela lur
+        left join label_info lb on lb.id = lur.label_id
+        where lur.staff_id=#{staffId}
+        <if test="userId != null and userId != 'null'">
+            and lur.user_id=#{userId}
+        </if>
+        union all
+        select lb.id,lb.label_name,lb.type,0 is_refer from label_info lb where lb.type = 0
+    </select>
+
+    <select id="queryStaffAudio" resultType="com.vma.push.business.dto.AttachmentAudio"
+            parameterType="java.lang.String">
+        select id,url,duration from attachment_audio where id = (select audio_id from staff where id = #{staffId})
+    </select>
+
+    <select id="queryStaffImages" resultType="com.vma.push.business.dto.AttachmentImage"
+            parameterType="java.lang.String">
+        select id,url from attachment_image where creator_id = #{staffId}
+    </select>
+
+    <select id="updateSignature" resultType="java.lang.Integer" parameterType="java.lang.String">
+        update staff set signature = #{signature} where id = #{staffId}
+    </select>
+
+    <select id="insertAudio" resultType="java.lang.Integer" parameterType="com.vma.push.business.dto.AttachmentAudio">
+        insert into attachment_audio(id,url,duration,creator_id,createtime,modify_time) values(#{id},#{url},#{duration},#{creator_id},NOW(),NOW())
+    </select>
+
+    <select id="updateAudio" resultType="java.lang.Integer" parameterType="com.vma.push.business.dto.AttachmentAudio">
+        update attachment_audio set url = #{url}, duration = #{duration}, modify_time = NOW() where id = #{id}
+    </select>
+
+    <select id="deleteAudio" resultType="java.lang.Integer" parameterType="com.vma.push.business.dto.AttachmentAudio">
+        delete from attachment_audio where id = #{id}
+    </select>
+
+    <select id="updateAudioId" resultType="java.lang.Integer" parameterType="java.lang.String">
+        update staff set audio_id = #{audioId}, modify_time = NOW() where id = #{staffId}
+    </select>
+
+    <select id="insertLabelInfo" resultType="java.lang.Integer"
+            parameterType="com.vma.push.business.dto.rsp.userInfo.RspUserLabelInfo">
+        insert into label_info values(#{label_id},#{label_name},#{type},#{staffId},NOW(),NOW())
+    </select>
+
+    <select id="insertLabelUserReal" resultType="java.lang.Integer"
+            parameterType="com.vma.push.business.dto.rsp.userInfo.RspUserLabelInfo">
+        insert into label_user_rela(id,label_id,user_id,staff_id,create_time,modify_time)
+	      values(#{realId},#{label_id},#{userId},#{staffId},NOW(),NOW())
+    </select>
+
+    <select id="deleteLabelInfo" resultType="java.lang.Integer"
+            parameterType="com.vma.push.business.dto.rsp.userInfo.RspUserLabelInfo">
+        delete from label_info where id = #{label_id}
+    </select>
+
+    <select id="deleteLabelUserReal" resultType="java.lang.Integer"
+            parameterType="com.vma.push.business.dto.rsp.userInfo.RspUserLabelInfo">
+        delete from label_user_rela where label_id = #{label_id} and staff_id = #{staffId} and user_id = #{userId}
+    </select>
+
+    <select id="insertImage" resultType="java.lang.Integer" parameterType="com.vma.push.business.dto.AttachmentImage">
+        insert into attachment_image(id,url,creator_id,createtime,modify_time) values(#{id},#{url},#{creator_id},NOW(),NOW())
+    </select>
+
+    <select id="deleteImage" resultType="java.lang.Integer" parameterType="com.vma.push.business.dto.AttachmentImage">
+        delete from attachment_image where id = #{id}
+    </select>
+
+    <select id="queryContactStaffListByEntId" resultType="com.vma.push.business.dto.ContactStaff"
+            parameterType="java.lang.String">
+        select s.id,s.name,phone,head_icon,department_id,d.name department_name,first_letter,s.station,s.enterprise_id,s.mail, s.status from staff s
+        left join department d on s.department_id = d.id
+        where d.enterprise_id = #{enterprise_id} and s.status=1 order by s.first_letter asc
+    </select>
+
+    <!--通讯录名片夹-->
+    <select id="queryContactCardListByUserId" resultType="com.vma.push.business.dto.ContactCard"
+            parameterType="java.lang.String">
+          select s.id,s.name,s.head_icon,s.phone,s.department_id,s.enterprise_id,s.status,
+                 e.name enterprise_name, e.status as enterprise_status, DATE_FORMAT(e.modify_time,'%Y-%m-%d') as enterprise_modify_time, s.station,first_letter,
+                 rela.position,rela.status as relaStatus,rela.froms,rela.from_user_id,rela.id relaId,rela.is_collect isCollect,
+                 DATE_FORMAT(s.create_time,'%Y-%m-%d') create_time, DATE_FORMAT((select max(create_time) from staff_quit where quit_staff_id = s.id),'%Y-%m-%d') dimission_time from staff s
+            left join enterprise e on e.id = s.enterprise_id
+            left join user_staff_rela rela on rela.staff_id = s.id
+            left join user_info u on u.id = rela.user_id
+          where u.id = #{userId} and s.open_id !=#{openId}
+        <if test="status != null">
+            and s.status != #{status}
+          </if>
+           order by rela.status desc,s.create_time desc
+    </select>
+
+    <!--获取staffId-->
+    <select id="queryStaffIdByOpenId" resultType="java.lang.String"
+            parameterType="java.lang.String">
+        select id from staff where open_id = #{open_id}
+          and enterprise_id = (select last_enterprise_id from user_info where open_id = #{open_id})
+    </select>
+
+    <select id="updateRelaStatus" resultType="java.lang.Integer" parameterType="java.lang.String">
+        update user_staff_rela
+          set status = #{status},
+            <if test="status == 0" >
+                position = NULL ,
+            </if>
+          modify_time = NOW()
+        where id = #{relaId}
+    </select>
+
+    <select id="getStaffByEnterpriseIdAndOpenid" parameterType="java.lang.String" resultMap="BaseResult">
+        select
+        <include refid="Base_Column_List"/>
+        from staff where enterprise_id=#{enterpriseId} and open_id = #{openId} and status=#{status}
+    </select>
+    <select id="getDepartmentPersionList" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.mini.ResDepartmentPerson">
+        SELECT
+	      id,name,station,head_icon,phone,role,status
+        FROM staff WHERE enterprise_id = #{enterpriseId}
+        <if test="departmentId != '-1' and departmentId != 'null'" >
+            AND department_id=#{departmentId}
+        </if>
+        <if test="name != null and name != 'null'" >
+            AND name like CONCAT('%',#{name},'%')
+        </if>
+        and status = #{status}
+    </select>
+
+    <select id="isExistCardByOpenId" parameterType="java.lang.String" resultType="java.lang.String">
+        select 1
+        from DUAL
+        where EXISTS(
+            select 'x'
+            from staff
+                inner JOIN enterprise e on e.id = staff.enterprise_id and e.status = 1
+                INNER JOIN user_staff_rela on staff.id = user_staff_rela.staff_id
+                inner join user_info on user_staff_rela.user_id = user_info.id
+            where user_info.open_id = staff.open_id
+            and staff.open_id = #{open_id} and staff.status = 1
+        )
+    </select>
+
+    <select id="isExistStaffByEntWxAndPhone" parameterType="java.lang.String" resultType="java.lang.String">
+        select 1
+        from DUAL
+        where EXISTS(
+            select 'x'
+            from staff
+	            INNER JOIN enterprise  on enterprise.id = staff.enterprise_id
+	            inner join deploy  		on enterprise.id = deploy.enterprise_id
+            where  staff.phone = #{phone}
+	          and  deploy.CorpID = #{corpId}
+        )
+    </select>
+
+    <select id="getRandomStaffByOpenId" parameterType="java.lang.String" resultMap="BaseResult">
+        select
+        <include refid="Base_Column_List"/>
+        from staff
+        where staff.open_id = #{open_id} and status=1
+        limit 1;
+    </select>
+
+    <select id="getRandomStaffByUserId" parameterType="java.lang.String" resultMap="BaseResult">
+        select
+        <include refid="Base_Column_List"/>
+        from staff
+        where status=1
+        and exists (select 1 from user_staff_rela where user_staff_rela.staff_id = staff.id and user_staff_rela.user_id = #{user_id})
+        and exists (select 1 from enterprise where enterprise.id = staff.enterprise_id and enterprise.status = 1)
+        limit 1;
+    </select>
+
+    <select id="getStaffListByOpenId" parameterType="java.lang.String" resultMap="BaseResult">
+        select
+        <include refid="Base_Column_List"/>
+        from staff where open_id = #{openId} and status=1
+    </select>
+
+    <select id="getWxIdsByPhone" parameterType="java.lang.String" resultType="java.lang.String">
+        select wx_id
+        from staff
+                INNER JOIN enterprise  on enterprise.id = staff.enterprise_id
+	            inner join deploy  		on enterprise.id = deploy.enterprise_id
+        where deploy.CorpID = #{corpId}
+        and   staff.phone = #{phone}
+    </select>
+    <select id="getWxDeptIdsByPhone" parameterType="java.lang.String" resultType="java.lang.String">
+        select department_id
+        from staff
+                INNER JOIN enterprise  on enterprise.id = staff.enterprise_id
+	            inner join deploy  		on enterprise.id = deploy.enterprise_id
+        where deploy.CorpID = #{corpId}
+        and   staff.phone = #{phone}
+        and   staff.status=1
+    </select>
+
+    <select id="getManagerList" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.mini.ResDepartmentPerson">
+        SELECT
+        id,name,station,head_icon,phone,role,first_letter
+        FROM staff WHERE enterprise_id = #{enterprise_id}
+        <if test="role != null">
+            AND role=#{role}
+        </if>
+        and status = 1
+    </select>
+    <select id="getHeadIconListByEnterpriseId" parameterType="java.lang.String" resultType="java.lang.String">
+        select head_icon headIcon from staff where enterprise_id = #{enterpriseId} and status = 1
+    </select>
+    <select id="getStaffByEnterpriseIdAndPhone" parameterType="java.lang.String" resultMap="BaseResult">
+        select
+        <include refid="Base_Column_List"/>
+        from staff where enterprise_id = #{enterprise_id} and phone=#{phone}
+    </select>
+    <select id="getPendingStaffList" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.mini.ResDepartmentPerson">
+        SELECT
+        id,name,station,head_icon,phone,status
+        FROM staff WHERE enterprise_id = #{enterprise_id}
+        and status = 3
+    </select>
+    <select id="getApproveStaffList" parameterType="java.lang.String"
+            resultType="com.vma.push.business.dto.rsp.mini.ResDepartmentPerson">
+        SELECT
+        id,name,station,head_icon,phone,status
+        FROM staff WHERE enterprise_id = #{enterprise_id}
+        and status in(1,4) AND audit_staff_id!=''
+    </select>
+
+    <select id="getReceiverStaff" parameterType="String" resultType="com.vma.push.business.dto.ContactCard">
+      select
+        staff.*, DATE_FORMAT(staff.create_time,'%Y-%m-%d') create_time,
+        e.name enterprise_name
+      from staff_quit
+        left join staff on staff.id = staff_quit.receiver_staff_id
+        left join enterprise e on e.id = staff.enterprise_id
+      where receiver_staff_id = #{id} ORDER BY staff_quit.create_time desc LIMIT 1
+    </select>
+
+    <select id="getWxIdByStaffId" parameterType="java.lang.String" resultType="java.lang.String">
+        select wx_id from staff where id = #{staffId}
+    </select>
+
+    <select id="getMyselfListByOpenId" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.mini.RepMyselfCardList">
+         SELECT
+	      s.id id,
+	      s.head_icon head_icon,
+	      e. NAME enterprise_name,
+          DATE_FORMAT(s.create_time,'%Y-%m-%d') create_time,
+	      rela.froms froms,
+	      s.phone,
+	      s.station,
+	      s.name,
+	      s.enterprise_id,
+	      s.department_id,
+          e.STATUS enterprise_status,
+          s.status staff_status,
+          s.address address,
+          s.temlate_id templateId,
+          s.mail mail,
+          s.share_setup share_setup,
+          DATE_FORMAT(e.modify_time,'%Y-%m-%d') enterprise_modify_time,
+          DATE_FORMAT(s.modify_time,'%Y-%m-%d') dimission_time
+         FROM
+	       staff s
+         LEFT JOIN enterprise e ON e.id = s.enterprise_id
+         LEFT JOIN user_staff_rela rela ON rela.staff_id = s.id AND rela.user_id = (SELECT id FROM user_info WHERE open_id = #{openId} )
+         WHERE
+	       s.open_id = #{openId}
+         ORDER BY e.status, s.create_time desc
+    </select>
+    <select id="getMyselfInfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.mini.RepMyCardInfo">
+     SELECT nick_name nickName,head_icon headIcon,
+     (SELECT COUNT(*) cardNum FROM staff s INNER JOIN enterprise e ON e.id = s.enterprise_id AND e.status = 1 WHERE open_id = #{openId} AND s.`status`=1 ) effectiveCardNum,
+     (SELECT COUNT(*) cardNum FROM staff s LEFT JOIN enterprise e ON e.id = s.enterprise_id WHERE open_id = #{openId}) totalCardNum
+     FROM user_info WHERE open_id = #{openId}
+    </select>
+
+    <select id="getStaffListByEnterpriseId" parameterType="java.lang.String" resultType="java.lang.String">
+        select id from staff where enterprise_id = #{enterpriseId}
+    </select>
+    <select id="getManagerPhoneByEnterpriseId" parameterType="java.lang.String" resultType="java.lang.String">
+        select phone from staff where enterprise_id = #{enterpriseId} and status = 1 and role in (0,1)
+    </select>
+    <select id="getEnterpriseName" parameterType="java.lang.String" resultType="java.lang.String">
+        select e.name from  staff s LEFT JOIN enterprise e on e.id = s.enterprise_id where s.id=#{staffId}
+    </select>
+    <select id="getPendingPerson" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from  staff where enterprise_id = #{enterpriseId} and status = 3
+    </select>
+    <!--获取收藏名片列表-->
+    <select id="getCollectCardList" resultType="com.vma.push.business.dto.ContactCard"
+            parameterType="java.lang.String">
+        select s.id,s.name,s.head_icon,s.phone,s.department_id,s.enterprise_id,s.status,
+        e.name enterprise_name, e.status as enterprise_status, DATE_FORMAT(e.modify_time,'%Y-%m-%d') as enterprise_modify_time, s.station,first_letter,
+        rela.position,rela.status as relaStatus,rela.froms,rela.from_user_id,rela.id relaId,rela.is_collect isCollect,
+        DATE_FORMAT(s.create_time,'%Y-%m-%d') create_time, DATE_FORMAT((select max(create_time) from staff_quit where quit_staff_id = s.id),'%Y-%m-%d') dimission_time from staff s
+        left join enterprise e on e.id = s.enterprise_id
+        left join user_staff_rela rela on rela.staff_id = s.id
+        left join user_info u on u.id = rela.user_id and rela.status =1
+        where u.id = #{userId}
+        and rela.is_collect = 1
+        order by rela.status desc,rela.position desc,s.create_time desc
+    </select>
+    <!--搜素名片-->
+    <select id="searchCard" resultType="com.vma.push.business.dto.ContactCard"
+            parameterType="java.lang.String">
+        select s.id,s.name,s.head_icon,s.phone,s.department_id,s.enterprise_id,s.status,
+        e.name enterprise_name, e.status as enterprise_status, DATE_FORMAT(e.modify_time,'%Y-%m-%d') as enterprise_modify_time, s.station,first_letter,
+        rela.position,rela.status as relaStatus,rela.froms,rela.from_user_id,rela.id relaId,rela.is_collect isCollect,
+        DATE_FORMAT(s.create_time,'%Y-%m-%d') create_time, DATE_FORMAT((select max(create_time) from staff_quit where quit_staff_id = s.id),'%Y-%m-%d') dimission_time from staff s
+        left join enterprise e on e.id = s.enterprise_id
+        left join user_staff_rela rela on rela.staff_id = s.id
+        left join user_info u on u.id = rela.user_id and rela.status =1
+        where u.id = #{userId}
+        <if test="comment != '' or comment != 'null'" >
+            and s.name like CONCAT('%',#{comment},'%')
+        </if>
+        order by rela.status desc,rela.position desc,s.create_time desc
+    </select>
+
+    <!--看名片名片夹-->
+    <select id="queryCardListByUserId" resultType="com.vma.push.business.dto.ContactCard"
+            parameterType="java.lang.String">
+        select s.id,s.name,s.head_icon,s.phone,s.department_id,s.enterprise_id,s.status,
+        e.name enterprise_name, e.status as enterprise_status, DATE_FORMAT(e.modify_time,'%Y-%m-%d') as enterprise_modify_time, s.station,first_letter,
+        rela.position,rela.status as relaStatus,rela.froms,rela.from_user_id,rela.id relaId,rela.is_collect isCollect,
+        DATE_FORMAT(s.create_time,'%Y-%m-%d') create_time, DATE_FORMAT((select max(create_time) from staff_quit where quit_staff_id = s.id),'%Y-%m-%d') dimission_time from staff s
+        left join enterprise e on e.id = s.enterprise_id
+        left join user_staff_rela rela on rela.staff_id = s.id
+        left join user_info u on u.id = rela.user_id and rela.status = #{relaStatus}
+        where u.id = #{userId} and s.open_id !=#{openId}
+        order by rela.status desc,rela.position desc,s.create_time desc
+    </select>
+
+    <update id="updataCardImgUrl">
+         update staff set card_img_url = #{cardImgUrl} where id = #{staffId}
+    </update>
+    <select id="getRadarPermission" resultType="com.vma.push.business.dto.rsp.mini.RepRadarPermissions">
+        select open_ai,open_boss from staff where id = #{staffId}
+    </select>
+    <select id="getRecommendCardToMainPage" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.mini.RepRecommendCard">
+		SELECT
+            staff.id staffId,
+            staff. NAME NAME,
+            staff.head_icon headIcon,
+            enterprise. NAME enterpriseName,
+            enterprise.id enterpriseId,
+            staff.department_id departmentId
+        FROM
+            staff
+        INNER JOIN enterprise ON staff.enterprise_id = enterprise.id
+        AND enterprise. STATUS = 1
+        WHERE
+            staff. STATUS = 1 and staff.open_id != #{openId}
+        ORDER BY
+            staff.create_time DESC
+	</select>
+</mapper>

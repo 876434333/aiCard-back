@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.TotalsMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.bi.entity.Totals" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="zhuan_old" property="zhuanOld" jdbcType="INTEGER" />
+    <result column="zhuan_today" property="zhuanToday" jdbcType="INTEGER" />
+    <result column="zan_old" property="zanOld" jdbcType="INTEGER" />
+    <result column="zan_today" property="zanToday" jdbcType="INTEGER" />
+    <result column="view_old" property="viewOld" jdbcType="INTEGER" />
+    <result column="view_today" property="viewToday" jdbcType="INTEGER" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, zhuan_old, zhuan_today, zan_old, zan_today, view_old, view_today, staff_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from totals
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from totals
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.bi.entity.Totals" >
+    insert into totals (id, zhuan_old, zhuan_today, 
+      zan_old, zan_today, view_old, 
+      view_today, staff_id)
+    values (#{id,jdbcType=VARCHAR}, #{zhuanOld,jdbcType=INTEGER}, #{zhuanToday,jdbcType=INTEGER}, 
+      #{zanOld,jdbcType=INTEGER}, #{zanToday,jdbcType=INTEGER}, #{viewOld,jdbcType=INTEGER}, 
+      #{viewToday,jdbcType=INTEGER}, #{staffId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.bi.entity.Totals" >
+    insert into totals
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="zhuanOld != null" >
+        zhuan_old,
+      </if>
+      <if test="zhuanToday != null" >
+        zhuan_today,
+      </if>
+      <if test="zanOld != null" >
+        zan_old,
+      </if>
+      <if test="zanToday != null" >
+        zan_today,
+      </if>
+      <if test="viewOld != null" >
+        view_old,
+      </if>
+      <if test="viewToday != null" >
+        view_today,
+      </if>
+      <if test="staffId != null" >
+        staff_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuanOld != null" >
+        #{zhuanOld,jdbcType=INTEGER},
+      </if>
+      <if test="zhuanToday != null" >
+        #{zhuanToday,jdbcType=INTEGER},
+      </if>
+      <if test="zanOld != null" >
+        #{zanOld,jdbcType=INTEGER},
+      </if>
+      <if test="zanToday != null" >
+        #{zanToday,jdbcType=INTEGER},
+      </if>
+      <if test="viewOld != null" >
+        #{viewOld,jdbcType=INTEGER},
+      </if>
+      <if test="viewToday != null" >
+        #{viewToday,jdbcType=INTEGER},
+      </if>
+      <if test="staffId != null" >
+        #{staffId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.bi.entity.Totals" >
+    update totals
+    <set >
+      <if test="zhuanOld != null" >
+        zhuan_old = #{zhuanOld,jdbcType=INTEGER},
+      </if>
+      <if test="zhuanToday != null" >
+        zhuan_today = #{zhuanToday,jdbcType=INTEGER},
+      </if>
+      <if test="zanOld != null" >
+        zan_old = #{zanOld,jdbcType=INTEGER},
+      </if>
+      <if test="zanToday != null" >
+        zan_today = #{zanToday,jdbcType=INTEGER},
+      </if>
+      <if test="viewOld != null" >
+        view_old = #{viewOld,jdbcType=INTEGER},
+      </if>
+      <if test="viewToday != null" >
+        view_today = #{viewToday,jdbcType=INTEGER},
+      </if>
+      <if test="staffId != null" >
+        staff_id = #{staffId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.bi.entity.Totals" >
+    update totals
+    set zhuan_old = #{zhuanOld,jdbcType=INTEGER},
+      zhuan_today = #{zhuanToday,jdbcType=INTEGER},
+      zan_old = #{zanOld,jdbcType=INTEGER},
+      zan_today = #{zanToday,jdbcType=INTEGER},
+      view_old = #{viewOld,jdbcType=INTEGER},
+      view_today = #{viewToday,jdbcType=INTEGER},
+      staff_id = #{staffId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

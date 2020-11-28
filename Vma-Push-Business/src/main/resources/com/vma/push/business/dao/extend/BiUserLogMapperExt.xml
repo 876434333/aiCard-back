@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.BiUserLogMapper" >
+
+    <select id="countUserAdd" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem" parameterType="java.util.Map">
+        call pro_test_partlist(#{departmentId},#{enterpriseId});
+        select date_format(datelist, '%m-%d') name,IFNULL(VALUE,0) value from calendar a left join (
+            SELECT count(*) 'value',date_format(create_time, '%Y-%m-%d') name
+            FROM  user_staff_rela
+            WHERE   datediff(now(),create_time)<![CDATA[<=]]>#{day}
+            AND enterprise_id = #{enterpriseId}
+            <if test="departmentId != null and departmentId != '' ">
+                AND department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+            </if>
+            GROUP BY date_format(create_time, '%Y-%m-%d')
+        ) b ON b.name=a.datelist
+        where datediff(now(),a.datelist)<![CDATA[<]]>#{day} and a.datelist<![CDATA[<]]>now()
+        ORDER BY a.datelist
+
+
+
+    </select>
+
+    <select id="countUserAttach" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem" parameterType="java.util.Map">
+        call pro_test_partlist(#{departmentId},#{enterpriseId});
+
+        select date_format(datelist, '%m-%d') name,IFNULL(VALUE,0) value from calendar a left join(
+            select count(*) 'value',date_format(create_time, '%Y-%m-%d') name from click_action_log where action_code='1000'
+            AND department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+            and enterprise_id = #{enterpriseId}
+            AND datediff(now(),create_time)<![CDATA[<=]]>#{day}
+            GROUP BY date_format(create_time, '%Y-%m-%d')
+        )b ON b.name=a.datelist
+        where datediff(now(),a.datelist)<![CDATA[<]]>#{day} and a.datelist<![CDATA[<]]>now()
+        ORDER BY a.datelist
+
+    </select>
+
+
+    <select id="countUserIm" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem" parameterType="java.util.Map">
+        SELECT
+        c.datelist name,
+        ifnull(sum(log.num), 0) 'value'
+        FROM calendar c LEFT JOIN bi_im_log log ON c.datelist = date_format(create_time, '%Y-%m-%d')
+        <if test="departmentId != null and departmentId != '' ">
+          AND log.department_id = #{departmentId}
+        </if>
+        AND log.enterprise_id = #{enterpriseId}
+        WHERE   to_days(now()) - to_days(datelist) <![CDATA[<]]>  #{day} AND to_days(now()) - to_days(datelist) > 0
+        group by name order by  c.datelist asc
+    </select>
+    <select id="countOrder" resultType="com.vma.push.business.dto.rsp.userInfo.DataItem" parameterType="java.util.Map">
+        call pro_test_partlist(#{departmentId},#{enterpriseId});
+        select date_format(datelist, '%m-%d') name,IFNULL(VALUE,0) value from calendar a left join(
+            select count(*) 'value',date_format(create_time, '%Y-%m-%d') name from shop_order
+            WHERE
+            department_id IN (select id from child_dept_enter where department_id=#{departmentId})
+            AND enterprise_id=#{enterpriseId}
+            AND datediff(now(),create_time)<![CDATA[<=]]>#{day}
+            GROUP BY date_format(create_time, '%Y-%m-%d')
+        )b ON b.name=a.datelist
+        where datediff(now(),a.datelist)<![CDATA[<]]>#{day} and a.datelist<![CDATA[<]]>now()
+        ORDER BY a.datelist
+
+
+    </select>
+
+
+    <select id="getUserByRate" parameterType="com.vma.push.business.dto.req.ReqGetByRate" resultType="com.vma.push.business.dto.rsp.RspUserByRate">
+
+        select * from (
+        SELECT
+        u.id user_id,
+        u.nick_name,
+        usr.clinch_time,
+        u.head_icon,
+        usr.id,
+        usr.staff_id,
+        staff.name staff_name,
+        usr.clinch_rate rate
+        FROM user_info u left join user_staff_rela usr on u.id = usr.user_id
+        left join staff on usr.staff_id=staff.id
+        where datediff(now(),usr.create_time)<![CDATA[<]]>#{day}
+        AND  usr.department_id in(select id from child_dept_enter where department_id=#{department_id})
+        and usr.enterprise_id= #{enterprise_id}
+        <if test="rate == 50">
+            and usr.clinch_rate<![CDATA[<=]]>#{rate}
+        </if>
+        <if test="rate==80">
+            and usr.clinch_rate<![CDATA[<=]]>#{rate} and usr.clinch_rate<![CDATA[>]]>50
+        </if>
+
+        <if test="rate==90">
+            and usr.clinch_rate<![CDATA[<=]]>#{rate} and usr.clinch_rate<![CDATA[>]]>80
+        </if>
+
+        <if test="rate==100">
+            and usr.clinch_rate<![CDATA[<=]]>#{rate} and usr.clinch_rate<![CDATA[>]]>90
+        </if>
+        <if test="staff_id !=null and staff_id != '' ">
+            and usr.staff_id = #{staff_id}
+        </if>
+
+        union
+        SELECT
+        u.id user_id,
+        u.nick_name,
+        usr.clinch_time,
+        u.head_icon,
+        usr.id,
+        usr.staff_id,
+        staff.name staff_name,
+        usr.clinch_rate rate
+        FROM user_info u left join user_staff_rela usr on u.id = usr.user_id
+        left join staff on usr.staff_id=staff.id
+        where datediff(now(),usr.create_time)<![CDATA[<]]>#{day}
+        AND  usr.department_id in(select id from child_dept_enter where department_id=#{department_id})
+        and usr.enterprise_id= #{enterprise_id}
+        <if test="rate == 50">
+            and usr.rate<![CDATA[<=]]>#{rate} and usr.clinch_rate is NULL
+        </if>
+        <if test="rate==80">
+            and usr.rate<![CDATA[<=]]>#{rate} and usr.rate<![CDATA[>]]>50 and usr.clinch_rate is NULL
+        </if>
+
+        <if test="rate==90">
+            and usr.rate<![CDATA[<=]]>#{rate} and usr.rate<![CDATA[>]]>80 and usr.clinch_rate is NULL
+        </if>
+
+        <if test="rate==100">
+            and usr.rate<![CDATA[<=]]>#{rate} and usr.rate<![CDATA[>]]>90 and usr.clinch_rate is NULL
+        </if>
+        <if test="staff_id !=null and staff_id != '' ">
+            and usr.staff_id = #{staff_id}
+        </if>
+        )a left join
+(select u.nick_name from_name,
+          usr.id
+from user_info u , user_staff_rela usr where u.open_id = usr.from_user_id and usr.enterprise_id =#{enterprise_id})b
+  on a.id = b.id
+
+    </select>
+</mapper>

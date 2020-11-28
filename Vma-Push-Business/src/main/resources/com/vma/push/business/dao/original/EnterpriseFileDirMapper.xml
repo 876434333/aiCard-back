@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vma.push.business.dao.EnterpriseFileDirMapper">
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.EnterpriseFileDir">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="enterprise_id" jdbcType="VARCHAR" property="enterpriseId" />
+    <result column="dir_name" jdbcType="VARCHAR" property="dirName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="dir_password" jdbcType="VARCHAR" property="dirPassword" />
+    <result column="show_order" jdbcType="INTEGER" property="showOrder" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, enterprise_id, dir_name, create_time, dir_password, show_order
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from enterprise_file_dir
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from enterprise_file_dir
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.EnterpriseFileDir">
+    insert into enterprise_file_dir
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="enterpriseId != null">
+        enterprise_id,
+      </if>
+      <if test="dirName != null">
+        dir_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="dirPassword != null">
+        dir_password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="enterpriseId != null">
+        #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="dirName != null">
+        #{dirName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dirPassword != null">
+        #{dirPassword,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.EnterpriseFileDir">
+    update enterprise_file_dir
+    <set>
+      <if test="enterpriseId != null">
+        enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      </if>
+      <if test="dirName != null">
+        dir_name = #{dirName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dirPassword != null">
+        dir_password = #{dirPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="showOrder != null">
+        show_order = #{showOrder,jdbcType=INTEGER}
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.EnterpriseFileDir">
+    update enterprise_file_dir
+    set enterprise_id = #{enterpriseId,jdbcType=VARCHAR},
+      dir_name = #{dirName,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      dir_password = #{dirPassword,jdbcType=VARCHAR},
+      show_order = #{showOrder,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <insert id="insert" parameterType="com.vma.push.business.entity.EnterpriseFileDir">
+    insert into enterprise_file_dir (id, enterprise_id, dir_name, 
+      create_time, dir_password)
+    values (#{id,jdbcType=VARCHAR}, #{enterpriseId,jdbcType=VARCHAR}, #{dirName,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{dirPassword,jdbcType=VARCHAR},)
+  </insert>
+</mapper>

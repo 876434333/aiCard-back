@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.DepartmentMapper" >
+
+    <resultMap id="BaseResultMap1" type="com.vma.push.business.dto.rsp.RspDepartPage" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="parent_id" property="parent_id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="order" property="order" jdbcType="INTEGER" />
+        <result column="enterprise_id" property="enterprise_id" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="getAll" resultMap="BaseResultMap1"  >
+        select
+        id,parent_id,name,`order`,enterprise_id
+        from department   WHERE enterprise_id = #{enid}
+
+    </select>
+
+    <select id="DepartTree" resultType="com.vma.push.business.dto.rsp.RspDepartTree">
+
+    select id,name,parent_id from department where enterprise_id=#{enid} and parent_id=#{pid}
+
+    </select>
+
+    <select id="DepartTreeNew" resultType="com.vma.push.business.dto.rsp.RspDepartTreeNew">
+
+        select id,name title,parent_id from department where enterprise_id=#{enid} and parent_id=#{pid}
+
+    </select>
+
+    <select id="departinfo" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspDepartInfo" >
+    SELECT id,`name` FROM department  WHERE enterprise_id=#{enid}
+    </select>
+
+    <select id="findCond" resultType="com.vma.push.business.entity.Department" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List" />
+        from department WHERE enterprise_id = #{id}
+    </select>
+    <update id="updateDeptName" parameterType="com.vma.push.business.dto.req.ReqUpdateDepartInfo">
+        update department set name=#{name},
+         parent_id=#{parent_id}
+         where  id=#{id} and enterprise_id=#{enterprise_id}
+    </update>
+    <update id="updateDeptOnlyName" parameterType="com.vma.push.business.dto.req.ReqUpdateDepartInfo">
+        update department set name=#{name}
+         where  id=#{id} and enterprise_id=#{enterprise_id}
+    </update>
+    <delete id="delDept" parameterType="java.lang.String">
+        delete from department where id=#{id} and enterprise_id=#{enter}
+    </delete>
+
+    <!-- M by plh at 2018-11-01 for count(id) to max(id) 防止重复-->
+    <select id="getMaxIdByParenId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select max(id) id FROM department WHERE enterprise_id = #{enterpriseId}
+    </select>
+
+    <select id="getDeparentListAndPerson" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.mini.RepDepartmentList">
+        SELECT department.name, department.id,
+          (select count(staff.id) from staff where FIND_IN_SET(staff.department_id, getAllStaffOfDepart(department.id)) and staff.status = 1) num
+       from department
+       WHERE department.enterprise_id =#{enterpriseId} AND department.parent_id=#{parentId}
+    </select>
+
+</mapper>

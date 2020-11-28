@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.EnterpriseFileDirMapper">
+	<select id="isExistSameDir" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select IFNULL((SELECT 1 FROM enterprise_file_dir WHERE enterprise_id = #{enterpriseId} and dir_name = #{dirName} LIMIT 1),0) isExit ;
+	</select>
+	<select id="getFileDirList" parameterType="java.lang.String" resultType="com.vma.push.business.entity.EnterpriseFileDir">
+		select id, enterprise_id enterpriseId, dir_name dirName, create_time createTime, dir_password dirPassword, show_order showOrder from enterprise_file_dir
+		where enterprise_id = #{enterpriseId} order by show_order, create_time desc
+	</select>
+</mapper>

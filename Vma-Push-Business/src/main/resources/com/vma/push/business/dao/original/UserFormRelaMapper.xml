@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.UserFormRelaMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.UserFormRela" >
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="user_id" property="userId" jdbcType="CHAR" />
+    <result column="form_id" property="formId" jdbcType="CHAR" />
+    <result column="staff_id" property="staffId" jdbcType="CHAR" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, form_id, staff_id, enterprise_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_form_rela
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from user_form_rela
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.UserFormRela" >
+    insert into user_form_rela (id, user_id, form_id, staff_id, 
+      enterprise_id)
+    values (#{id,jdbcType=CHAR}, #{userId,jdbcType=CHAR}, #{formId,jdbcType=CHAR}, #{staffId,jdbcType=CHAR}, 
+      #{enterpriseId,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.UserFormRela" >
+    insert into user_form_rela
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="formId != null" >
+        form_id,
+      </if>
+      <if test="staffId != null" >
+        staff_id,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="formId != null" >
+        #{formId,jdbcType=CHAR},
+      </if>
+      <if test="staffId != null" >
+        #{staffId,jdbcType=CHAR},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.UserFormRela" >
+    update user_form_rela
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=CHAR},
+      </if>
+      <if test="formId != null" >
+        form_id = #{formId,jdbcType=CHAR},
+      </if>
+      <if test="staffId != null" >
+        staff_id = #{staffId,jdbcType=CHAR},
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.UserFormRela" >
+    update user_form_rela
+    set user_id = #{userId,jdbcType=CHAR},
+      form_id = #{formId,jdbcType=CHAR},
+      staff_id = #{staffId,jdbcType=CHAR},
+      enterprise_id = #{enterpriseId,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+</mapper>

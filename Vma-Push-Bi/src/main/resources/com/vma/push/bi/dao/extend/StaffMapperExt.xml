@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.StaffMapper" >
+  <select id="findCond" parameterType="java.lang.String" resultType="com.vma.push.bi.entity.Staff">
+    select
+    <include refid="Base_Column_List" />
+    from staff
+    where 1=1
+    <if test="departmentId != null and departmentId != ''">
+      and department_id = #{departmentId}
+    </if>
+    <if test="enterpriseId != null and enterpriseId != '' ">
+      and enterprise_id = #{enterpriseId}
+    </if>
+  </select>
+</mapper>

@@ -1,0 +1,19 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.TotalsMapper" >
+    
+    
+    
+    
+    <select id="findTotal" parameterType="java.lang.String" resultType="com.vma.push.business.entity.Totals">
+
+        SELECT
+       id ,
+       view_old viewOld,
+       view_today viewToday,
+       zhuan_old zhuanOld,
+       zhuan_today zhuanToday,
+       zan_old zanOld,
+       zan_today zanToday
+     FROM totals WHERE staff_id=#{staffId} limit 1
+    </select>
+</mapper>

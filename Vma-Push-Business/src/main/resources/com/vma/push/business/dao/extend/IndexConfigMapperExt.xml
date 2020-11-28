@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.IndexConfigMapper">
+    <select id="getNo" parameterType="java.lang.String" resultType="com.vma.push.business.entity.IndexConfig">
+      SELECT
+          id, prix,
+          no, dept_id deptId,
+          enterprise_id enterpriseId,
+          create_time createTime,
+          modified_time modifiedTime
+       FROM index_config t WHERE enterprise_id =#{enterpriseId} AND prix = #{pri};
+  </select>
+</mapper>

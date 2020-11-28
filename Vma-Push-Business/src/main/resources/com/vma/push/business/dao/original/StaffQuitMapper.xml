@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.StaffQuitMapper" >
+  <resultMap id="BaseResultMap" type="com.vma.push.business.entity.StaffQuit" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="quit_staff_id" property="quitStaffId" jdbcType="VARCHAR" />
+    <result column="receiver_staff_id" property="receiverStaffId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, quit_staff_id, receiver_staff_id, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from staff_quit
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from staff_quit
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.vma.push.business.entity.StaffQuit" >
+    insert into staff_quit (id, quit_staff_id, receiver_staff_id, 
+      create_time)
+    values (#{id,jdbcType=VARCHAR}, #{quitStaffId,jdbcType=VARCHAR}, #{receiverStaffId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vma.push.business.entity.StaffQuit" >
+    insert into staff_quit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="quitStaffId != null" >
+        quit_staff_id,
+      </if>
+      <if test="receiverStaffId != null" >
+        receiver_staff_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="quitStaffId != null" >
+        #{quitStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverStaffId != null" >
+        #{receiverStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vma.push.business.entity.StaffQuit" >
+    update staff_quit
+    <set >
+      <if test="quitStaffId != null" >
+        quit_staff_id = #{quitStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverStaffId != null" >
+        receiver_staff_id = #{receiverStaffId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vma.push.business.entity.StaffQuit" >
+    update staff_quit
+    set quit_staff_id = #{quitStaffId,jdbcType=VARCHAR},
+      receiver_staff_id = #{receiverStaffId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

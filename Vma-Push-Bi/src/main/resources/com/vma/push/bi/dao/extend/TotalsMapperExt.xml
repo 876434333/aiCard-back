@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.TotalsMapper" >
+
+
+    <select id="findAll" resultType="com.vma.push.bi.entity.Totals">
+
+      SELECT id,
+      zhuan_old zhuanOld,
+      zhuan_today zhuanToday,
+      zan_old zanOld,
+      zan_today zanToday,
+      view_old viewOld,
+      view_today viewToday,
+      staff_id staffId
+       FROM totals
+    </select>
+
+
+
+</mapper>

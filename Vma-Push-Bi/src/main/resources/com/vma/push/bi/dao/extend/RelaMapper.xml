@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.bi.dao.RelaMapper" >
+
+    <select id="findAllId" resultType="com.vma.push.bi.dto.rsp.RspAllId">
+        select user_id,staff_id,enterprise_id from user_staff_rela;
+    </select>
+
+    <select id="findCountByAllId" parameterType="com.vma.push.bi.dto.req.ReqAllId" resultType="Integer">
+        SELECT count(1) FROM click_action_log WHERE user_id = #{user_id} AND employee_id = #{employee_id} AND enterprise_id = #{enterprise_id};
+    </select>
+
+    <update id="insertRate" parameterType="com.vma.push.bi.dto.req.ReqAllId">
+        UPDATE user_staff_rela SET rate=#{count} WHERE  user_id = #{user_id} AND staff_id = #{employee_id} AND enterprise_id = #{enterprise_id};
+
+    </update>
+
+
+</mapper>

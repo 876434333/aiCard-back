@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vma.push.business.dao.CircleCompanyMapper">
+
+    <resultMap id="BaseResultMap1" type="com.vma.push.business.dto.rsp.RspCircleDetail">
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="employee_id" property="employee_id" jdbcType="VARCHAR"/>
+        <result column="create_time" property="create_time" jdbcType="TIMESTAMP"/>
+        <result column="head_icon" property="head_icon" jdbcType="VARCHAR"/>
+        <result column="circle_id" property="circle_id" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getAllId" resultType="java.lang.String">
+        select id
+        from circle_company order by modify_time DESC
+    </select>
+
+    <select id="miniCircle" resultType="java.lang.String" parameterType="java.lang.String">
+        select id from circle_company
+        where (employee_id=#{staffid} and flag='0')
+        OR (enterprise_id=(select enterprise_id from staff where id=#{staffid}) and flag='1')
+        ORDER BY modify_time desc
+    </select>
+
+    <select id="getAllIdByItem" resultType="java.lang.String"
+            parameterType="com.vma.push.business.dto.req.ReqSelectCircle">
+        SELECT t.id FROM (
+        select a.id,a.modify_time,a.flag
+        from circle_company a left join staff b on a.employee_id=b.id
+        <where>
+            a.enterprise_id=#{enterprise_id}
+            <if test="name != null and name != ''">
+                AND (b.name like CONCAT('%',#{name},'%') )
+            </if>
+            <if test="begin_time != null ">
+                AND a.create_time <![CDATA[>=]]> #{begin_time}
+            </if>
+            <if test="end_time != null ">
+                AND a.create_time <![CDATA[<=]]> #{end_time}
+            </if>
+        </where>
+        UNION
+        select a.id,a.modify_time,a.flag
+        from enterprise e,circle_company a
+        <where>
+            a.enterprise_id=#{enterprise_id}
+            AND a.flag = 1
+            AND e.id = a.enterprise_id
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="begin_time != null ">
+                AND a.create_time <![CDATA[>=]]> #{begin_time}
+            </if>
+            <if test="end_time != null ">
+                AND a.create_time <![CDATA[<=]]> #{end_time}
+            </if>
+        </where>) t
+        <where>
+            <if test="flag == 0">
+                AND t.flag ='0'
+            </if>
+            <if test="flag == 1">
+                AND t.flag = '1'
+            </if>
+            <if test="flag == null">
+                AND t.flag in(1,0)
+            </if>
+        </where>
+        order by t.modify_time DESC
+    </select>
+
+    <select id="getAllIdByStaffId" resultType="java.lang.String" parameterType="com.vma.push.business.dto.req.ReqCircleByStaffAndEnterprise">
+        select id
+        from circle_company where enterprise_id = #{enterprise_id} order by modify_time DESC
+    </select>
+
+    <select id="pageCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1)
+        from circle_company where enterprise_id = #{enterprise_id} order by modify_time DESC
+    </select>
+
+    <select id="getAllIdByStaff" resultType="java.lang.String" parameterType="com.vma.push.business.dto.req.ReqCircleByStaffAndEnterprise">
+        select id
+        from circle_company where employee_id = #{employee_id} and flag=0 order by modify_time DESC
+    </select>
+
+    <select id="pageCountByStaff" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1)
+        from circle_company where employee_id = #{employee_id} and flag=0 order by modify_time DESC
+    </select>
+
+    <select id="getAllIdbyenid" resultType="java.lang.String">
+        select id
+        from circle_company  where enterprise_id=#{id}
+        order by modify_time DESC
+    </select>
+    <select id="rspAllCircle" parameterType="java.lang.String" resultType="com.vma.push.business.dto.rsp.RspAllCircle">
+        select a.id,a.`content`,a.`create_time`,a.`zan_num`,a.`ping_num`,a.`employee_id`,b.head_icon,b.name,a.flag,a.cover,a.title
+        from circle_company a left join staff b
+        on a.employee_id=b.id
+        where a.id=#{id} and
+        (select a.flag from circle_company a  where a.id=#{id} )=0
+        UNION
+        select a.id,a.`content`,a.`create_time`,a.`zan_num`,a.`ping_num`,a.`employee_id`,b.head_icon,b.name,a.flag,a.cover,a.title
+        from circle_company a left join enterprise b
+        on a.employee_id=b.id
+        where a.id=#{id} and
+        (select a.flag from circle_company a  where a.id=#{id} )=1
+    </select>
+
+
+    <select id="getCircleInfoById" parameterType="java.lang.String" resultMap="BaseResultMap1">
+         select a.id circle_id,a.content,a.employee_id,a.create_time,b.head_icon,b.`name`,a.flag,a.type,a.cover,a.title
+        from circle_company a left join staff b on a.employee_id=b.id
+        where a.id=#{id} and (select flag from circle_company a where a.id=#{id})=0
+        UNION
+        select a.id circle_id,a.content,a.employee_id,a.create_time,b.head_icon,b.`name`,a.flag,a.type,a.cover,a.title
+        from circle_company a left join enterprise b on a.employee_id=b.id
+        where a.id=#{id} and (select flag from circle_company a where a.id=#{id})=1
+    </select>
+
+</mapper>
