@@ -44,9 +44,9 @@ spring:
     name: vma-push-business
   datasource:
       type: com.alibaba.druid.pool.DruidDataSource
-      url: jdbc:mysql://127.0.0.1:3306/deecard_dev?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
-      username: liql
-      password: deecard_dev
+      url: jdbc:mysql://47.112.195.100:3306/aiCard?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+      username: root
+      password: 5&GL$C06xG
 
       driver-class-name: com.mysql.jdbc.Driver
       initialSize: 1

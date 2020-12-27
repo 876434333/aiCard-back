@@ -640,7 +640,8 @@ public class SuperEnterpriseServiceImpl implements ISuperEnterpriseService {
 
 						// 本地数据库：创建部门
 						// int maxId = departmentMapper.getMaxIdByEnterpriseWxId(reqEnterpriseAllId.getCorp_id(), platformDeploy.getEnterpriseId());
-						int maxDeptId = indexCreate.getDeptIdIndex();
+						int maxDeptId = indexCreate.getDeptIdIndex(); // m hxf
+//						int maxDeptId = 100;
 						Department department = new Department();
 						department.setCreateTime(new Date());
 						department.setEnterpriseId(enterprise.getId());

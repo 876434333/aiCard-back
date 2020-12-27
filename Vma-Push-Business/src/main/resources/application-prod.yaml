@@ -43,7 +43,6 @@ spring:
     name: vma-push-business
   datasource:
       type: com.alibaba.druid.pool.DruidDataSource
-
       url: jdbc:mysql://118.25.107.71:3318/deecarddb?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
       username: deecard
       password: deecard@2018!123
